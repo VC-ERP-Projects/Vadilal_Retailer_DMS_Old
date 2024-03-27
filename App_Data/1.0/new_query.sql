@@ -1,0 +1,64 @@
+
+/****** Object:  Table [dbo].[OPIN]    Script Date: 08/10/2015 18:30:57 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OPIN](
+	[PinCodeID] [int] NOT NULL,
+	[PinCode] [nvarchar](6) NOT NULL,
+	[Area] [nvarchar](max) NULL,
+	[Description] [nvarchar](max) NULL,
+	[CreatedDate] [datetime] NOT NULL,
+	[CreatedBy] [int] NOT NULL,
+	[UpdatedDate] [datetime] NOT NULL,
+	[UpdatedBy] [int] NOT NULL,
+	[Active] [bit] NOT NULL,
+	[SyncStatus] [bit] NOT NULL,
+ CONSTRAINT [PK_OPIN] PRIMARY KEY CLUSTERED 
+(
+	[PinCodeID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Default [DF_OPIN_Active]    Script Date: 08/10/2015 18:30:57 ******/
+ALTER TABLE [dbo].[OPIN] ADD  CONSTRAINT [DF_OPIN_Active]  DEFAULT ((0)) FOR [Active]
+GO
+/****** Object:  Default [DF_OPIN_SyncStatus]    Script Date: 08/10/2015 18:30:57 ******/
+ALTER TABLE [dbo].[OPIN] ADD  CONSTRAINT [DF_OPIN_SyncStatus]  DEFAULT ((0)) FOR [SyncStatus]
+GO
+
+
+ALTER TABLE ONTF  ADD CustGroupID INT NULL
+GO
+
+ALTER TABLE ONTF  ADD CityID INT NULL
+GO
+
+ALTER TABLE ONTF  ADD PinCodeID INT NULL
+GO
+
+
+ALTER TABLE ONTF ADD CONSTRAINT FK_ONTF_CGRP FOREIGN KEY (CustGroupID) REFERENCES CGRP (CustGroupID)
+GO
+
+ALTER TABLE ONTF ADD CONSTRAINT FK_ONTF_OCTY FOREIGN KEY (CityID) REFERENCES OCTY (CityID)
+GO
+
+ALTER TABLE ONTF ADD CONSTRAINT FK_ONTF_OPIN FOREIGN KEY (PinCodeID) REFERENCES OPIN (PinCodeID)
+GO
+
+ALTER TABLE OCRD  ADD DeviceID nvarchar(MAX) NULL
+GO
+
+ALTER TABLE OCRD  ADD Ratings decimal(18,2) NOT NULL Default(0)
+GO
+
+ALTER TABLE OCPN  ADD MinBillValue money NOT NULL Default(0)
+GO
+
+ALTER TABLE OCPN  ADD MaxBillValue money NOT NULL Default(0)
+GO
+
+
+

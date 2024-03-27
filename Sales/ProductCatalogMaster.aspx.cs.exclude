@@ -1,0 +1,1077 @@
+﻿using AjaxControlToolkit;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity.Validation;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Services;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Xml.Linq;
+
+[Serializable]
+public class CustData
+{
+    public Int32? RegionID { get; set; }
+    public String RegionName { get; set; }
+    public Int32? DistRegion { get; set; }
+    public String DistRegionName { get; set; }
+    public Int32? DivisionID { get; set; }
+    public String DivisionName { get; set; }
+    public Int32? EmpgroupID { get; set; }
+    public String EmpGroupName { get; set; }
+    public String EmpGroupDesc { get; set; }
+    public Int32? EmployeeID { get; set; }
+    public String EmployeeName { get; set; }
+    public Boolean? IsInclude { get; set; }
+    //public Boolean Active { get; set; }
+}
+
+public partial class Marketing_Scheme : System.Web.UI.Page
+{
+    #region Declaration
+
+    protected int UserID;
+    protected decimal ParentID;
+    protected String AuthType;
+    String TempPath = Path.GetTempPath();
+
+
+    private List<CustData> PCAT1
+    {
+        get { return this.ViewState["PCAT1"] as List<CustData>; }
+        set { this.ViewState["PCAT1"] = value; }
+    }
+    private List<PCAT2> PCAT2
+    {
+        get { return this.ViewState["PCAT2"] as List<PCAT2>; }
+        set { this.ViewState["PCAT2"] = value; }
+    }
+
+    #endregion
+
+    #region Helper Method
+
+    private void ClearAllInputs()
+    {
+        if (chkMode.Checked)
+        {
+            ACEtxtCode.Enabled = txtCode.Enabled = false;
+            btnSubmit.Text = "Submit";
+            txtCode.Text = "Auto Generated";
+            txtCode.Style.Remove("background-color");
+            txtItemName.Enabled = true;
+        }
+        else
+        {
+            ACEtxtCode.Enabled = txtCode.Enabled = true;
+            btnSubmit.Text = "Submit";
+            txtCode.Text = "";
+            txtCode.Style.Add("background-color", "rgb(250, 255, 189);");
+            txtItemName.Text = "";
+            txtItemGroupName.Text = "";
+            txtItemSubGroupName.Text = "";
+            txtPCS.Text = "";
+            txtLtr.Text = "";
+            txtItemName.Enabled = false;
+            txtItemName.Style.Remove("background-color");
+            txtCode.Focus();
+        }
+        txtFromDate.Text = txtToDate.Text = txtCreatedBy.Text = txtUpdatedBy.Text = txtItemName.Text = txtItemGroupName.Text = txtItemSubGroupName.Text =
+            txtPCS.Text = txtLtr.Text = "";
+        //txtItemName.Enabled = true;
+        btnSubmit.Visible = true;
+        chkActive.Checked = true;
+        ViewState["CataLogID"] = ViewState["PCAT1"] = ViewState["PCAT2"] = null;
+
+        gvCustData.DataSource = null;
+        gvCustData.DataBind();
+
+        GvImage.DataSource = null;
+        GvImage.DataBind();
+
+        btnAddCustData.Text = "Add Cust Data";
+        ViewState["LineID"] = null;
+        ViewState["CustDataID"] = null;
+
+        using (DDMSEntities ctx = new DDMSEntities())
+        {
+            var EmpG = ctx.OGRPs.Where(x => x.Active && x.ParentID == ParentID).Select(x => new { EmpGroupName = x.EmpGroupName + " # " + x.EmpGroupDesc, x.EmpGroupID }).ToList();
+            ddlEGroup.DataSource = EmpG;
+            ddlEGroup.DataBind();
+            ddlEGroup.Items.Insert(0, new ListItem("---Select---", "0"));
+            //ddlEGroup.SelectedValue = "0";
+
+            //string CreatedDate = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.CreatedDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+            //string UpdatedDate = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.UpdatedDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+            //txtCreatedBy.Text = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name + " " + CreatedDate).FirstOrDefault();   // + "  " + 
+            //txtUpdatedBy.Text = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name + " " + UpdatedDate).FirstOrDefault();
+        }
+
+
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "$.cookie('Scheme', 'tabs-1');", true);
+    }
+
+    public void ValidateUser()
+    {
+        if (Session["UserID"] != null && Session["ParentID"] != null &&
+          Int32.TryParse(Session["UserID"].ToString(), out UserID) && Decimal.TryParse(Session["ParentID"].ToString(), out ParentID))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+                int EGID = Convert.ToInt32(Session["GroupID"]);
+                int CustType = Convert.ToInt32(Session["Type"]);
+
+                int lIndex = Request.ServerVariables["script_name"].ToString().LastIndexOf('/');
+                string pagename = Request.ServerVariables["script_name"].ToString().Substring(lIndex + 1);
+                var Auth = ctx.GRP1.Include("OMNU").FirstOrDefault(x => x.OMNU.PageName == pagename && x.EmpGroupID == EGID && x.ParentID == ParentID);
+                if (Auth == null || Auth.AuthorizationType == "N")
+                    Response.Redirect("~/AccessError.aspx");
+                else if (!(CustType == 1 ? Auth.OMNU.Company : CustType == 2 ? Auth.OMNU.CMS : CustType == 3 ? Auth.OMNU.DMS : CustType == 4 ? Auth.OMNU.SS : false))
+                    Response.Redirect("~/AccessError.aspx");
+                else
+                {
+                    AuthType = Auth.AuthorizationType;
+
+                    var UserType = Session["UserType"].ToString();
+                    if (Auth.OMNU.MenuType.ToUpper() == "B" || UserType.ToUpper() == "B" || UserType.ToUpper() == Auth.OMNU.MenuType.ToUpper()) { }
+                    else
+                        Response.Redirect("~/AccessError.aspx");
+
+                    if (Session["Lang"] != null && Session["Lang"].ToString() == "gujarati")
+                    {
+                        try
+                        {
+                            var xml = XDocument.Load(Server.MapPath("../Document/forlanguage.xml"));
+                            var unit = xml.Descendants("customer_grp_master");
+                            if (unit != null)
+                            {
+                                var ctrls = Common.GetAll(this, typeof(Label));
+                                foreach (Label item in ctrls)
+                                {
+                                    if (unit.Elements().Any(x => x.Name == item.ID))
+                                        item.Text = unit.Elements().FirstOrDefault(x => x.Name == item.ID).Value;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        { }
+                    }
+                }
+            }
+        }
+        else
+        {
+            Response.Redirect("~/Login.aspx");
+        }
+
+    }
+    private void ClearCustomerData()
+    {
+        txtRegion.Text = txtDistRegion.Text = txtDivision.Text = txtEmp.Text = "";
+        ddlEGroup.SelectedValue = "0";
+        ViewState["GSchemeID"] = null;
+        btnAddCustData.Text = "Add Cust Data";
+    }
+
+    #endregion
+
+    #region Page Load
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        ValidateUser();
+        if (!IsPostBack)
+        {
+            ClearAllInputs();
+            //Session["PhotoFileName"] = "";
+            //Session["filesize"] = "";
+        }
+        ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
+        //scriptManager.RegisterPostBackControl(this.btnAddPhoto_Click);
+        //scriptManager.RegisterPostBackControl(btnCUpload);
+        //scriptManager.RegisterPostBackControl(btnItemUpload);
+        //scriptManager.RegisterPostBackControl(btnMappingUpload);
+    }
+
+    #endregion
+
+    #region Button Click
+
+    protected void btnSubmitClick(object sender, EventArgs e)
+    {
+        try
+        {
+            if (Page.IsValid)
+            {
+                using (DDMSEntities ctx = new DDMSEntities())
+                {
+                    DateTime dt;
+                    TimeSpan ts;
+                    OPCAT objOPCAT = null;
+                    int CataLogID;
+                    if (hdnItemID.Value == null || hdnItemID.Value == "0")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper item.',3);", true);
+                        return;
+                    }
+                    if (txtFromDate.Text == "" && txtToDate.Text == "")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper date.',3);", true);
+                        return;
+                    }
+                    if (txtCode.Text == "")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper no.',3);", true);
+                        return;
+                    }
+
+                    if (txtFromDate.Text == "" && txtToDate.Text == "" && txtRegion.Text == "")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select  proper Date.',3);", true);
+                        return;
+                    }
+                    if (txtToDate.Text == "")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please Select proper To Date.',3);", true);
+                        return;
+                    }
+                    if (txtFromDate.Text == "")
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper fromdate.',3);", true);
+                        return;
+                    }
+                    //if (txtRegion.Text == "")
+                    //{
+                    //    //ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please Select 'proper Dealer Region.',3);", true);
+                    //    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper dealer region.',3);", true);
+                    //    return;
+                    //}
+                    if (gvCustData.Rows.Count == 0)
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select atleast one customer confing.',3);", true);
+                        return;
+                    }
+                    if (GvImage.Rows.Count == 0)
+                    {
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select Atleast image.',3);", true);
+                        return;
+                    }
+                    //if (afuProductPhoto.HasFile == false)
+                    //{
+                    //    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Please select proper image.',3);", true);
+                    //    return;
+                    //}
+                    if (ViewState["CataLogID"] != null && Int32.TryParse(ViewState["CataLogID"].ToString(), out CataLogID))
+                    {
+                        objOPCAT = ctx.OPCATs.Include("PCAT1").Include("PCAT2").FirstOrDefault(x => x.CataLogID == CataLogID);
+                    }
+                    else
+                    {
+                        objOPCAT = new OPCAT();
+                        //if (ctx.OPCATs.Any(x => x.ItemGroupName == txtItemGroupName.Text.Trim()))
+                        //{
+                        //    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Item Group is not allowed.',3);", true);
+                        //    return;
+                        //}
+
+                        objOPCAT.CataLogID = ctx.GetKey("OPCAT", "CataLogID", "", 0, 0).FirstOrDefault().Value;
+                        objOPCAT.CreateDate = DateTime.Now;
+                        objOPCAT.CreatedBy = UserID;
+                        ctx.OPCATs.Add(objOPCAT);
+                    }
+
+
+                    if (Common.DateTimeConvert(txtFromDate.Text, out dt))
+                        objOPCAT.Fromdate = dt;
+                    if (Common.DateTimeConvert(txtToDate.Text, out dt))
+                        objOPCAT.Todate = dt;
+                    objOPCAT.ParentID = ParentID;
+                    objOPCAT.ItemName = txtItemName.Text;
+                    objOPCAT.ItemGroupName = txtItemGroupName.Text.Trim();
+                    objOPCAT.SubGroupName = txtItemSubGroupName.Text.Trim();
+                    if (hdnItemID.Value == "0")
+                    {
+                        objOPCAT.ItemID = objOPCAT.ItemID;
+                    }
+                    else
+                    {
+                        objOPCAT.ItemID = Convert.ToInt32(hdnItemID.Value);
+
+                    }
+                    objOPCAT.Ltr = txtLtr.Text.Trim();
+                    objOPCAT.PCS = txtPCS.Text.Trim();
+                    objOPCAT.Active = chkActive.Checked;
+                    objOPCAT.UpdatedDate = DateTime.Now;
+                    objOPCAT.UpdatedBy = UserID;
+
+
+                    if (PCAT1 != null)
+                    {
+                        objOPCAT.PCAT1.ToList().ForEach(x => ctx.PCAT1.Remove(x));
+
+                        int PCAT1Count = ctx.GetKey("PCAT1", "Cat1ID", "", 0, 0).FirstOrDefault().Value;
+                        foreach (CustData item in PCAT1)
+                        {
+                            if (item.RegionID > 0 || item.DistRegion > 0 || item.DivisionID > 0 || item.EmployeeID > 0 || item.EmpgroupID > 0)
+                            {
+                                PCAT1 objoldPCAT1 = ctx.PCAT1.FirstOrDefault(x => x.CataLogID == objOPCAT.CataLogID);
+                                if (objoldPCAT1 == null)
+                                {
+                                    PCAT1 objPCAT1 = new PCAT1();
+                                    objPCAT1.Cat1ID = PCAT1Count++;
+                                    objPCAT1.CataLogID = objOPCAT.CataLogID;
+                                    objPCAT1.DealerRegionID = item.RegionID;
+                                    objPCAT1.DistRegionID = item.DistRegion;
+                                    objPCAT1.DivisionID = item.DivisionID;
+                                    objPCAT1.EmpCatID = item.EmpgroupID;
+                                    objPCAT1.EmpID = item.EmployeeID;
+                                    objPCAT1.IsInclude = item.IsInclude;  //chkIsInclude.Checked;
+                                    objOPCAT.PCAT1.Add(objPCAT1);
+                                }
+                                else if (objoldPCAT1.CataLogID == objOPCAT.CataLogID)
+                                {
+                                    PCAT1 objPCAT1 = new PCAT1();
+                                    objPCAT1.Cat1ID = PCAT1Count++;
+                                    objPCAT1.CataLogID = objOPCAT.CataLogID;
+                                    objPCAT1.DealerRegionID = item.RegionID;
+                                    objPCAT1.DistRegionID = item.DistRegion;
+                                    objPCAT1.DivisionID = item.DivisionID;
+                                    objPCAT1.EmpCatID = item.EmpgroupID;
+                                    objPCAT1.EmpID = item.EmployeeID;
+                                    objPCAT1.IsInclude = item.IsInclude; //chkIsInclude.Checked;
+                                    objOPCAT.PCAT1.Add(objPCAT1);
+                                }
+                            }
+                        }
+                    }
+                    if (PCAT2 != null)
+                    {
+                        PCAT2 objPCAT2 = null;
+                        objOPCAT.PCAT2.ToList().ForEach(x => ctx.PCAT2.Remove(x));
+
+                        int Cata2Count = ctx.GetKey("PCAT2", "Cat2ID", "", 0, 0).FirstOrDefault().Value;
+                        int ImageIDCount = ctx.GetKey("PCAT2", "ImageID", "", 0, 0).FirstOrDefault().Value;
+
+                        foreach (PCAT2 item in PCAT2)
+                        {
+                            PCAT2 objoldPCAT2 = ctx.PCAT2.FirstOrDefault(x => x.CataLogID == objOPCAT.CataLogID);
+                            if (objoldPCAT2 == null)
+                            {
+                                objPCAT2 = new PCAT2();
+                                objPCAT2.Cat2ID = Cata2Count++;
+                                objPCAT2.CataLogID = objOPCAT.CataLogID;
+                                objPCAT2.ImageID = ImageIDCount;
+                                objPCAT2.ImagePath = item.ImagePath;
+                                objOPCAT.PCAT2.Add(objPCAT2);
+                            }
+                            else
+                            {
+                                objPCAT2 = new PCAT2();
+                                objPCAT2.Cat2ID = Cata2Count++;
+                                objPCAT2.CataLogID = objOPCAT.CataLogID;
+                                objPCAT2.ImageID = ImageIDCount;
+                                objPCAT2.ImagePath = item.ImagePath;
+                                objOPCAT.PCAT2.Add(objPCAT2);
+                            }
+                        }
+                    }
+
+                    ctx.SaveChanges();
+                    alink.HRef = imgProduct.ImageUrl = "~/Images/no.jpg";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Record submitted successfully : " + objOPCAT.CataLogID + " - " + objOPCAT.ItemName + "',1);", true);
+                    ClearAllInputs();
+                    ClearCustomerData();
+                    //}
+                    //else
+                    //{
+                    //    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select proper Item!.',3);", true);
+                    //}
+                }
+
+
+            }
+
+
+
+
+        }
+        catch (DbEntityValidationException ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + ex.EntityValidationErrors.FirstOrDefault().ValidationErrors.FirstOrDefault().ErrorMessage + "',2);", true);
+        }
+        catch (Exception ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + Common.GetString(ex) + "',2);", true);
+        }
+    }
+
+
+    protected void btnCancelClick(object sender, EventArgs e)
+    {
+        //Response.Redirect("Sales.aspx");
+        Response.Redirect("../Reports/MasterReport.aspx?MID=234");
+    }
+
+    #endregion
+
+    #region Change Event
+
+    protected void txtCodeTextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (!chkMode.Checked && !string.IsNullOrEmpty(txtCode.Text))
+            {
+                btnCancleCustData_Click(btnCancleCustData, EventArgs.Empty);
+                // for General tab Clear
+                txtFromDate.Text = txtToDate.Text = "";
+                chkActive.Checked = true;
+
+                var Data = txtCode.Text.Split("-".ToArray());
+                if (Data.Length > 1)
+                {
+                    using (DDMSEntities ctx = new DDMSEntities())
+                    {
+                        //String ItemName = txtItemName.Text;
+                        int CataLogID = Convert.ToInt32(Data.First());
+
+                        var objOPCAT = ctx.OPCATs.Include("PCAT1").Include("PCAT2").FirstOrDefault(x => x.ParentID == ParentID && x.CataLogID == CataLogID);
+
+                        if (objOPCAT != null)
+                        {
+                            ViewState["CataLogID"] = objOPCAT.CataLogID;
+                            txtCode.Text = objOPCAT.CataLogID.ToString();
+                            txtItemName.Text = objOPCAT.ItemName;
+                            txtItemGroupName.Text = objOPCAT.ItemGroupName;
+                            txtItemSubGroupName.Text = objOPCAT.SubGroupName;
+                            txtPCS.Text = objOPCAT.PCS;
+                            txtLtr.Text = objOPCAT.Ltr;
+
+                            chkActive.Checked = objOPCAT.Active;
+
+
+                            if (objOPCAT.Fromdate.HasValue)
+                                txtFromDate.Text = Common.DateTimeConvert(objOPCAT.Fromdate.Value);
+
+                            if (objOPCAT.Todate.HasValue)
+                                txtToDate.Text = Common.DateTimeConvert(objOPCAT.Todate.Value);
+
+                            hdnItemID.Value = objOPCAT.ItemID.ToString();
+
+                            //string CreatedDate = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.CreatedDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+                            //string UpdatedDate = ctx.OEMPs.Where(x => x.EmpID == UserID && x.ParentID == ParentID).Select(x => x.UpdatedDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+                            //txtCreatedBy.Text = ctx.OEMPs.Where(x => x.EmpID == objOPCAT.CreatedBy && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name + " " + CreatedDate).FirstOrDefault();
+                            //txtUpdatedBy.Text = ctx.OEMPs.Where(x => x.EmpID == objOPCAT.UpdatedBy && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name + " " + UpdatedDate).FirstOrDefault();
+
+                            string CreatedDate = ctx.OPCATs.Where(x => x.CataLogID == objOPCAT.CataLogID && x.ParentID == ParentID).Select(x => x.CreateDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+                            string CreatedName = ctx.OEMPs.Where(x => x.EmpID == objOPCAT.CreatedBy && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name).FirstOrDefault();
+                            txtCreatedBy.Text = ctx.OPCATs.Where(x => x.CataLogID == objOPCAT.CataLogID && x.ParentID == ParentID).Select(x => CreatedName + " " + CreatedDate).FirstOrDefault();
+
+                            string UpdatedDate = ctx.OPCATs.Where(x => x.CataLogID == objOPCAT.CataLogID && x.ParentID == ParentID).Select(x => x.UpdatedDate).FirstOrDefault().ToString("dd/MM/yyyy HH:mm");
+                            string UpdatedName = ctx.OEMPs.Where(x => x.EmpID == objOPCAT.UpdatedBy && x.ParentID == ParentID).Select(x => x.EmpCode + " # " + x.Name).FirstOrDefault();
+                            txtUpdatedBy.Text = ctx.OPCATs.Where(x => x.CataLogID == objOPCAT.CataLogID && x.ParentID == ParentID).Select(x => UpdatedName + " " + UpdatedDate).FirstOrDefault();
+
+                            PCAT1 = new List<CustData>();
+
+                            foreach (PCAT1 sc in objOPCAT.PCAT1)
+                            {
+                                CustData item = new CustData();
+
+                                item.RegionID = sc.DealerRegionID;
+                                item.RegionName = sc.DealerRegionID.HasValue ? ctx.OCSTs.FirstOrDefault(z => z.StateID == sc.DealerRegionID.Value).StateName : "";
+                                item.DistRegion = sc.DistRegionID;
+                                item.DistRegionName = sc.DistRegionID.HasValue ? (ctx.OCSTs.FirstOrDefault(y => y.StateID == sc.DistRegionID).StateName) : "";
+                                item.DivisionID = sc.DivisionID;
+                                item.DivisionName = sc.DivisionID.HasValue ? (ctx.ODIVs.FirstOrDefault(y => y.DivisionlID == sc.DivisionID).DivisionName) : "";
+                                item.EmpgroupID = sc.EmpCatID;
+                                item.EmpGroupName = sc.EmpCatID.HasValue && sc.EmpCatID > 0 ? (ctx.OGRPs.Where(x => x.EmpGroupID == sc.EmpCatID.Value && x.ParentID == 1000010000000000).Select(x => x.EmpGroupName + " # " + x.EmpGroupDesc)).FirstOrDefault() : "";
+                                item.EmployeeID = sc.EmpID;
+                                item.EmployeeName = sc.EmpID.HasValue && sc.EmpID > 0 ? (ctx.OEMPs.Where(y => y.EmpID == sc.EmpID.Value).Select(x => x.Name + " # " + x.EmpCode).FirstOrDefault()) : "";
+                                item.IsInclude = sc.IsInclude;
+                                PCAT1.Add(item);
+                            }
+
+                            gvCustData.DataSource = PCAT1;
+                            gvCustData.DataBind();
+
+                            PCAT2 = objOPCAT.PCAT2.OrderBy(x => x.CataLogID).ToList();
+                            GvImage.DataSource = PCAT2;
+                            GvImage.DataBind();
+                            btnAddCustData.Text = "Add Group";
+                            btnAddPhoto.Text = "Add Image";
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select proper Item!',3);", true);
+                            ClearAllInputs();
+                        }
+
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + Common.GetString(ex) + "',2);", true);
+        }
+        //txtName.Focus();
+    }
+
+    protected void chkMode_Checked(object sender, EventArgs e)
+    {
+        try
+        {
+            ClearAllInputs();
+        }
+        catch (Exception ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + Common.GetString(ex) + "',2);", true);
+        }
+    }
+
+    #endregion
+
+    #region PCAT1
+
+    protected void btnAddCustData_Click(object sender, EventArgs e)
+    {
+        if (PCAT1 == null)
+            PCAT1 = new List<CustData>();
+
+        int LineID;
+
+        if (!string.IsNullOrEmpty(txtRegion.Text))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+                int RegionID = Int32.TryParse(txtRegion.Text.Split("-".ToArray()).First().Trim(), out RegionID) ? RegionID : 0;
+                if (ctx.OCSTs.Any(x => x.StateID == RegionID))
+                {
+                    CustData Data = null;
+                    var RegionName = ctx.OCSTs.FirstOrDefault(x => x.StateID == RegionID).StateName;
+
+                    if (ViewState["CustDataID"] != null && Int32.TryParse(ViewState["CustDataID"].ToString(), out LineID))
+                    {
+                        Data = PCAT1[LineID];
+                        Data.RegionID = RegionID;
+                        Data.RegionName = RegionName;
+                        Data.DistRegion = null;
+                        Data.DistRegionName = null;
+                        Data.DivisionID = null;
+                        Data.DivisionName = null;
+                        Data.EmpgroupID = null;
+                        Data.EmpGroupName = null;
+                        Data.EmployeeID = 0;
+                        Data.EmployeeName = null;
+                        Data.IsInclude = chkIsInclude.Checked;
+                    }
+                    else
+                    {
+                        if (!PCAT1.Any(x => x.RegionID == RegionID))
+                        {
+                            Data = new CustData();
+                            Data.RegionID = RegionID;
+                            Data.RegionName = RegionName;
+
+                            PCAT1.Add(Data);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Region name is not allowed!',3);", true);
+                            ClearCustomerData();
+                            return;
+                        }
+                    }
+                    Data.IsInclude = chkIsInclude.Checked;
+                    ViewState["CustDataID"] = null;
+                    btnAddCustData.Text = "Add Cust Data";
+                    ClearCustomerData();
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('select proper Region.',3);", true);
+                ClearCustomerData();
+            }
+        }
+        //else if (!string.IsNullOrEmpty(txtDistRegion.Text) && txtDistRegion.Text.Split("#".ToArray()).Length > 1)
+        else if (!string.IsNullOrEmpty(txtDistRegion.Text))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+                int DistRegionID = Int32.TryParse(txtDistRegion.Text.Split("-".ToArray()).First().Trim(), out DistRegionID) ? DistRegionID : 0;
+                if (ctx.OCSTs.Any(x => x.StateID == DistRegionID))
+                {
+                    CustData Data = null;
+                    var DistRegionName = ctx.OCSTs.FirstOrDefault(x => x.StateID == DistRegionID).StateName;
+
+                    if (ViewState["CustDataID"] != null && Int32.TryParse(ViewState["CustDataID"].ToString(), out LineID))
+                    {
+                        Data = PCAT1[LineID];
+                        Data.RegionID = null;
+                        Data.RegionName = null;
+                        Data.DistRegion = DistRegionID;
+                        Data.DistRegionName = DistRegionName;
+                        Data.DivisionID = null;
+                        Data.DivisionName = null;
+                        Data.EmpgroupID = null;
+                        Data.EmpGroupName = null;
+                        Data.EmployeeID = 0;
+                        Data.EmployeeName = null;
+                        Data.IsInclude = chkIsInclude.Checked;
+                    }
+                    else
+                    {
+                        if (!PCAT1.Any(x => x.DistRegion == DistRegionID))
+                        {
+                            Data = new CustData();
+                            Data.DistRegion = DistRegionID;
+                            Data.DistRegionName = DistRegionName;
+                            PCAT1.Add(Data);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Dist. Region name is not allowed!',3);", true);
+                            ClearCustomerData();
+                            return;
+                        }
+                    }
+                    Data.IsInclude = chkIsInclude.Checked;
+                    ViewState["CustDataID"] = null;
+                    btnAddCustData.Text = "Add Cust Data";
+                    ClearCustomerData();
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('select proper Dist. Region.',3);", true);
+                ClearCustomerData();
+
+            }
+        }
+        else if (!string.IsNullOrEmpty(txtDivision.Text))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+                int DivisionID = Int32.TryParse(txtDivision.Text.Split("-".ToArray()).First().Trim(), out DivisionID) ? DivisionID : 0;
+                if (ctx.ODIVs.Any(x => x.DivisionlID == DivisionID))
+                {
+                    var DivisioName = ctx.ODIVs.FirstOrDefault(x => x.DivisionlID == DivisionID).DivisionName;
+
+                    CustData Data = null;
+                    if (ViewState["CustDataID"] != null && Int32.TryParse(ViewState["CustDataID"].ToString(), out LineID))
+                    {
+                        Data = PCAT1[LineID];
+                        Data.DivisionID = DivisionID;
+                        Data.DivisionName = DivisioName;
+                        Data.DistRegion = null;
+                        Data.DistRegionName = null;
+                        Data.EmpgroupID = null;
+                        Data.EmpGroupName = null;
+                        Data.EmployeeID = 0;
+                        Data.EmployeeName = null;
+                        Data.IsInclude = chkIsInclude.Checked;
+                    }
+                    else
+                    {
+                        if (!PCAT1.Any(x => x.DivisionID == DivisionID))
+                        {
+                            Data = new CustData();
+                            Data.DivisionID = DivisionID;
+                            Data.DivisionName = DivisioName;
+                            PCAT1.Add(Data);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Division name is not allowed!',3);", true);
+                            ClearCustomerData();
+                            return;
+                        }
+                    }
+                    Data.IsInclude = chkIsInclude.Checked;
+                    ViewState["CustDataID"] = null;
+                    btnAddCustData.Text = "Add Cust Data";
+                    ClearCustomerData();
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('select proper division.',3);", true);
+                ClearCustomerData();
+
+            }
+        }
+        else if (!string.IsNullOrEmpty(txtEmp.Text))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+                int EmpID = Int32.TryParse(txtEmp.Text.Split("-".ToArray()).Last().Trim(), out EmpID) ? EmpID : 0;
+                if (ctx.OEMPs.Any(x => x.EmpID == EmpID))
+                {
+                    var EmpName = ctx.OEMPs.FirstOrDefault(x => x.EmpID == EmpID).Name;
+
+                    CustData Data = null;
+                    if (ViewState["CustDataID"] != null && Int32.TryParse(ViewState["CustDataID"].ToString(), out LineID))
+                    {
+                        Data = PCAT1[LineID];
+                        Data.RegionID = null;
+                        Data.RegionName = null;
+                        Data.DistRegion = null;
+                        Data.DistRegionName = null;
+                        Data.DivisionID = null;
+                        Data.DivisionName = null;
+                        Data.EmpgroupID = null;
+                        Data.EmpGroupName = null;
+                        Data.EmployeeID = EmpID;
+                        Data.EmployeeName = EmpName;
+                        Data.IsInclude = chkIsInclude.Checked;
+                    }
+                    else
+                    {
+                        if (!PCAT1.Any(x => x.EmployeeID == EmpID))
+                        {
+                            Data = new CustData();
+                            Data.EmployeeID = EmpID;
+                            Data.EmployeeName = EmpName;
+                            PCAT1.Add(Data);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Employee name is not allowed!',3);", true);
+                            ClearCustomerData();
+                            return;
+                        }
+                    }
+                    Data.IsInclude = chkIsInclude.Checked;
+                    ViewState["CustDataID"] = null;
+                    btnAddCustData.Text = "Add Cust Data";
+                    ClearCustomerData();
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('select proper Employee.',3);", true);
+                ClearCustomerData();
+
+            }
+        }
+        else if (!string.IsNullOrEmpty(ddlEGroup.Text))
+        {
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+
+                int EmpGID = Int32.TryParse(ddlEGroup.Text.Split("-".ToArray()).First().Trim(), out EmpGID) ? EmpGID : 0;
+                if (ctx.OGRPs.Any(x => x.EmpGroupID == EmpGID))
+                {
+                    //var EmpGID = ctx.OGRPs.Where(x => x.Active && x.ParentID == ParentID).Select(x => new { EmpGroupName = x.EmpGroupName + " # " + x.EmpGroupDesc, x.EmpGroupID }).ToList();
+                    var EmpGName = ctx.OGRPs.Where(x => x.EmpGroupID == EmpGID).Select(x => new { EmpGroupName = x.EmpGroupName + " # " + x.EmpGroupDesc, x.EmpGroupID }).FirstOrDefault();
+
+                    CustData Data = null;
+                    if (ViewState["CustDataID"] != null && Int32.TryParse(ViewState["CustDataID"].ToString(), out LineID))
+                    {
+                        Data = PCAT1[LineID];
+                        Data.RegionID = null;
+                        Data.RegionName = null;
+                        Data.DistRegion = null;
+                        Data.DistRegionName = null;
+                        Data.DivisionID = null;
+                        Data.DivisionName = null;
+                        Data.EmpgroupID = EmpGID;
+                        Data.EmpGroupName = EmpGName.EmpGroupName;
+                        Data.EmployeeID = 0;
+                        Data.EmployeeName = null;
+                        Data.IsInclude = chkIsInclude.Checked;
+                    }
+                    else
+                    {
+                        if (!PCAT1.Any(x => x.EmpgroupID == EmpGID))
+                        {
+                            Data = new CustData();
+                            Data.EmpgroupID = EmpGID;
+                            Data.EmpGroupName = EmpGName.EmpGroupName;
+                            PCAT1.Add(Data);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Same Employee name is not allowed!',3);", true);
+                            return;
+                        }
+                    }
+                    Data.IsInclude = chkIsInclude.Checked;
+                    ViewState["CustDataID"] = null;
+                    btnAddCustData.Text = "Add Cust Data";
+                    ClearCustomerData();
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select at least one data.',3);", true);
+                ClearCustomerData();
+
+            }
+        }
+        else
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('Select at least one data.',3);", true);
+            return;
+        }
+        gvCustData.DataSource = PCAT1;
+        gvCustData.DataBind();
+    }
+
+    protected void btnCancleCustData_Click(object sender, EventArgs e)
+    {
+        ClearCustomerData();
+        ViewState["CustDataID"] = null;
+    }
+
+    protected void gvCustData_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "deleteCustData")
+        {
+            int LineID = Convert.ToInt32(e.CommandArgument);
+            PCAT1.RemoveAt(LineID);
+
+            gvCustData.DataSource = PCAT1;
+            gvCustData.DataBind();
+
+            ViewState["CustDataID"] = null;
+            btnAddCustData.Text = "Add Cust Data";
+        }
+        if (e.CommandName == "editCustData")
+        {
+            int LineID = Convert.ToInt32(e.CommandArgument);
+            var objPCAT1 = PCAT1[LineID];
+
+            if (!string.IsNullOrEmpty(objPCAT1.RegionName))
+                txtRegion.Text = objPCAT1.RegionID + " - " + objPCAT1.RegionName;
+            else
+                txtRegion.Text = "";
+
+            if (!string.IsNullOrEmpty(objPCAT1.DistRegionName))
+                txtDistRegion.Text = objPCAT1.DistRegion + " - " + objPCAT1.DistRegionName;
+            else
+                txtDistRegion.Text = "";
+
+            if (!string.IsNullOrEmpty(objPCAT1.DivisionName))
+                txtDivision.Text = objPCAT1.DivisionID + " - " + objPCAT1.DivisionName;
+            else
+                txtDivision.Text = "";
+
+            if (!string.IsNullOrEmpty(objPCAT1.EmpGroupName))
+                ddlEGroup.SelectedValue = objPCAT1.EmpgroupID.ToString();
+            else
+                ddlEGroup.SelectedValue = "0";
+
+            if (!string.IsNullOrEmpty(objPCAT1.EmployeeName))
+                txtEmp.Text = objPCAT1.EmployeeName + " - " + objPCAT1.EmployeeID;
+            else
+                txtEmp.Text = "";
+
+            chkIsInclude.Checked = Convert.ToBoolean(objPCAT1.IsInclude);
+
+            ViewState["CustDataID"] = LineID;
+            btnAddCustData.Text = "Update Cust Data";
+        }
+
+    }
+
+    #endregion
+
+    #region PCAT2
+    protected void afuProductPhoto_UploadedComplete(object sender, AsyncFileUploadEventArgs e)
+    {
+        try
+        {
+            if (afuProductPhoto != null && afuProductPhoto.HasFile)
+            {
+                System.IO.FileInfo f = new FileInfo(afuProductPhoto.PostedFile.FileName);
+                //if (Int32.Parse(e.FileSize) > 1024000)
+                //{
+                //    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "size", "ModelMsg('Only image is allowed!',3);", true);
+                //    return;
+                //}
+                Session["filesize"] = e.FileSize;
+                if ((f.Extension.ToLower() == ".jpg") || (f.Extension.ToLower() == ".png") || (f.Extension.ToLower() == ".gif") || (f.Extension.ToLower() == ".jpeg"))
+                {
+                    string directoryPath = HttpContext.Current.Server.MapPath("~/Document/DashBoardImages");
+
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
+                    //string newFile = Guid.NewGuid().ToString("N") + Path.GetExtension(afuProductPhoto.FileName);
+
+                    string newFile = Path.Combine(directoryPath, afuProductPhoto.FileName);
+
+                    Session["PhotoFileName"] = afuProductPhoto.FileName;
+                    afuProductPhoto.PostedFile.SaveAs(newFile);
+                }
+            }
+            else
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "size", "ModelMsg('Only image is allowed!',3);", true);
+                return;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + Common.GetString(ex) + "',2);", true);
+        }
+    }
+
+    protected void btnAddPhoto_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            int LineID;
+            if (PCAT2 == null)
+                PCAT2 = new List<PCAT2>();
+            PCAT2 objPCAT2 = null;
+
+
+            string filepath = Session["PhotoFileName"].ToString();
+            Session["PhotoFileName"] = "";
+            string FileSize = Session["filesize"].ToString();
+            Session["filesize"] = "";
+
+            if (FileSize != "")
+            {
+                if (Int32.Parse(FileSize) > 1024000) 
+                {
+                    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "size", "ModelMsg('File size should not be greater than 1 MB!',3);", true);
+                    return;
+                }
+            }
+
+            if (filepath == "")
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('Please upload valid file!',3);", true);
+                return;
+            }
+
+            
+
+            using (DDMSEntities ctx = new DDMSEntities())
+            {
+
+                if (filepath != "")
+                {
+
+                    if (ViewState["GSchemeID"] != null && Int32.TryParse(ViewState["GSchemeID"].ToString(), out LineID))
+                    {
+                        objPCAT2 = PCAT2[LineID];
+                        objPCAT2.ImagePath = filepath;
+                        GvImage.DataSource = PCAT2;
+                        GvImage.DataBind();
+                    }
+                    else
+                    {
+                        objPCAT2 = new PCAT2();
+                        objPCAT2.ImagePath = filepath;
+                        PCAT2.Add(objPCAT2);
+                        GvImage.DataSource = PCAT2;
+                        GvImage.DataBind();
+                    }
+
+                    if (!String.IsNullOrEmpty(objPCAT2.ImagePath))
+                        //string directoryPath = HttpContext.Current.Server.MapPath("~/Document/DashBoardImages");
+                        alink.HRef = imgProduct.ImageUrl = "~/Document/DashBoardImages/" + objPCAT2.ImagePath;
+                    else
+                        alink.HRef = imgProduct.ImageUrl = "~/Images/no.jpg";
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('Please upload valid file!',3);", true);
+                    return;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('Please upload valid file!',3);", true);
+            return;
+        }
+    }
+
+    protected void GvImage_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "deleteImage")
+        {
+            int LineID = Convert.ToInt32(e.CommandArgument);
+            PCAT2.RemoveAt(LineID);
+
+            GvImage.DataSource = PCAT2;
+            GvImage.DataBind();
+
+            ViewState["GSchemeID"] = null;
+            btnAddCustData.Text = "Add Image";
+        }
+        if (e.CommandName == "editImage")
+        {
+
+            int LineID = Convert.ToInt32(e.CommandArgument);
+            var objPCAT2 = PCAT2[LineID];
+
+            if (!String.IsNullOrEmpty(objPCAT2.ImagePath))
+                //string directoryPath = HttpContext.Current.Server.MapPath("~/Document/DashBoardImages");
+                alink.HRef = imgProduct.ImageUrl = "~/Document/DashBoardImages/" + objPCAT2.ImagePath;
+            else
+                alink.HRef = imgProduct.ImageUrl = "~/Images/no.jpg";
+
+            //if (!string.IsNullOrEmpty(objPCAT2.ImagePath))
+            //    afuProductPhoto. imgProduct.ImageUrl = objPCAT2.ImagePath;
+
+            ViewState["GSchemeID"] = LineID;
+            btnAddPhoto.Text = "Update Image";
+        }
+
+    }
+
+    protected void btnclear_Click(object sender, EventArgs e)
+    {
+        afuProductPhoto.Dispose();
+    }
+    #endregion
+
+    [WebMethod]
+    public static List<DicData> GetItem(string prefixText)
+    {
+        List<DicData> dicData = new List<DicData>();
+        Oledb_ConnectionClass objClass = new Oledb_ConnectionClass();
+        SqlCommand Cm = new SqlCommand();
+        decimal ParentID = 1000010000000000;
+        Int32 UserID = 1;
+        Cm.Parameters.Clear();
+        Cm.CommandType = CommandType.StoredProcedure;
+        Cm.CommandText = "GetItemForProdcatelog";
+        //Cm.Parameters.AddWithValue("@DivisionId", DivisionId);
+        Cm.Parameters.AddWithValue("@Prefix", prefixText);
+        DataSet ds = objClass.CommonFunctionForSelect(Cm);
+        if (ds.Tables.Count > 0)
+        {
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                dicData = ds.Tables[0].AsEnumerable()
+                            .Select(r => new DicData { Text = r.Field<string>("Data"), Value = r.Field<int>("Value") })
+                            .ToList();
+            }
+        }
+        return dicData;
+    }
+    [WebMethod]
+    public static string GetItemDetails(string ItemCode)
+    {
+        string jsonstring = "";
+        Oledb_ConnectionClass objClass = new Oledb_ConnectionClass();
+        SqlCommand Cm = new SqlCommand();
+        Cm.Parameters.Clear();
+        Cm.CommandType = CommandType.StoredProcedure;
+        Cm.CommandText = "GetItemCategoryDetails";
+        Cm.Parameters.AddWithValue("@ItemCode", ItemCode);
+        DataSet ds = objClass.CommonFunctionForSelect(Cm);
+        if (ds.Tables.Count > 0)
+        {
+            jsonstring = JsonConvert.SerializeObject(ds.Tables[0]);
+        }
+        return jsonstring;
+    }
+
+}

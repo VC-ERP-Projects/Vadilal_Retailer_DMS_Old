@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:p1="http://vadilal.com/DMS_to_SAP/Custledmail" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="SI_SynchOut_Custledmail" targetNamespace="http://vadilal.com/DMS_to_SAP/Custledmail" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_SI_SynchOut_Custledmail" />
+  <wsdl:types>
+    <xsd:schema xmlns="http://vadilal.com/DMS_to_SAP/Custledmail" targetNamespace="http://vadilal.com/DMS_to_SAP/Custledmail" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="MT_CustLedMail_Response" type="p1:DT_CustLedMail_Res" />
+      <xsd:element name="MT_CustLedMail_Request" type="p1:DT_CustLedMail_Req" />
+      <xsd:complexType name="DT_CustLedMail_Req">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">710835331f6511e7a93200000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="GWA_MAIL">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="COMPANY_CODE" type="xsd:string" />
+                <xsd:element name="CUSTOMER" type="xsd:string" />
+                <xsd:element name="DIVISION" type="xsd:string" />
+                <xsd:element name="FRDATE" type="xsd:string" />
+                <xsd:element name="TODATE" type="xsd:string" />
+                <xsd:element name="REQ_DATE" type="xsd:string" />
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DT_CustLedMail_Res">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">5f22c6e21f7b11e7cffe00000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="FLAG" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">62919c551f7b11e79dce0060732f8660</xsd:appinfo>
+              <xsd:documentation>Flag</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="MESSAGE" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">62919c561f7b11e7c8800060732f8660</xsd:appinfo>
+              <xsd:documentation>Message</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="MT_CustLedMail_Request">
+    <wsdl:documentation />
+    <wsdl:part name="MT_CustLedMail_Request" element="p1:MT_CustLedMail_Request" />
+  </wsdl:message>
+  <wsdl:message name="MT_CustLedMail_Response">
+    <wsdl:documentation />
+    <wsdl:part name="MT_CustLedMail_Response" element="p1:MT_CustLedMail_Response" />
+  </wsdl:message>
+  <wsdl:portType name="SI_SynchOut_Custledmail">
+    <wsdl:documentation />
+    <wsdl:operation name="SI_SynchOut_Custledmail">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_SI_SynchOut_Custledmail" />
+      </wsp:Policy>
+      <wsdl:input message="p1:MT_CustLedMail_Request" />
+      <wsdl:output message="p1:MT_CustLedMail_Response" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SI_SynchOut_CustledmailBinding" type="p1:SI_SynchOut_Custledmail">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="SI_SynchOut_Custledmail">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SI_SynchOut_CustledmailService">
+    <wsdl:port name="HTTP_Port" binding="p1:SI_SynchOut_CustledmailBinding">
+      <address location="http://vilpidev.vadilal.com:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_Custledmail&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FCustledmail" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:SI_SynchOut_CustledmailBinding">
+      <address location="https://vilpidev.vadilal.com:50001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_Custledmail&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FCustledmail" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

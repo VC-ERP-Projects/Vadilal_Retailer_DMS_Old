@@ -1,0 +1,384 @@
+#region VProcure Code
+
+            try
+            {
+
+                string password = string.Empty;
+                string fromEmail = string.Empty;
+                string userName = string.Empty;
+                int portNo;
+                bool enableSsl;
+                string smtpClient = string.Empty;
+                string body = "";
+
+                DateTime FromDate = DateTime.Now.AddMonths(-1), ToDate = DateTime.Now;
+
+                using (VProcureEntities _dbContext = new VProcureEntities())
+                {
+                    EMAIL objMail = _dbContext.EMAILs.FirstOrDefault(x => x.isActive == true);
+
+                    if (DateTime.Now.Date >= objMail.AutoDispatchRegMail.GetValueOrDefault(DateTime.Now.Date))
+                    {
+                        if (!objMail.AutoDispatchRegMail.HasValue)
+                        {
+                            objMail.AutoDispatchRegMail = DateTime.Now.AddMonths(1);
+                        }
+                        else
+                        {
+                            objMail.AutoDispatchRegMail = objMail.AutoDispatchRegMail.Value.AddMonths(1);
+                        }
+                        List<ODCH> objODCH = _dbContext.ODCHes.Where(x => x.Active == true
+                                        && EntityFunctions.TruncateTime(x.DispatchDate) >= EntityFunctions.TruncateTime(FromDate) && EntityFunctions.TruncateTime(x.DispatchDate) <= EntityFunctions.TruncateTime(ToDate)).ToList();
+
+                        if (objODCH.Count() != 0)    // Add Material Tab
+                        {
+                            objODCH = objODCH.OrderByDescending(x => x.CreatedDate).ToList();
+
+                              StringBuilder str = new StringBuilder();
+                    str.Append("<table width='100%' cellpadding='0' cellspacing='0' border='0' align='center' style='border:1px solid #d6d6d6;'>");
+                    str.Append("<tbody>");
+                    str.Append("<tr>");
+                    str.Append("<td bgcolor='#f5f5f5'>");
+                    str.Append("<table width='100%' cellpadding='0' cellspacing='0'>");
+                    str.Append("<tbody>");
+                    str.Append("<tr>");
+                    str.Append("<td>");
+                    str.Append("<table border='0' cellpadding='30' cellspacing='0' width='100%' style='font-family:open sans, Arial,Helvetica,sans-serif;font-size:14px;color:#cecece;line-height:20px; '>");
+                    str.Append("<tbody>");
+                    str.Append("<tr>");
+                    str.Append("<td style=' color:#333; ' valign='top'>");
+                    str.Append("<p style='text-align:center; text-decoration: underline; font-size:18px; '><strong>Dispatch Register</strong><br /></p>");
+                    str.Append("Dear Sir,<br />");
+                    str.Append("</p>");
+                    str.Append("<p>");
+                    if (_dbContext.Database.Connection.Database.ToLower().Contains(("VPROCURE_QA").ToLower()))
+                    {
+                        str.Append("<p style='text-align:center; text-decoration: underline; font-size:25px; '><b >This is a DUMMY/TEST mail. So Please ignore</b></p><br /><br />");
+                    }
+                    str.Append("Following is the Dispatch Data From :" + FromDate.ToString("dd/MMM/yyyy") + " To : " + ToDate.ToString("dd/MMM/yyyy") + ".<br /><br />");
+                    str.Append("<b> (1)RM AND PM Dispatch Summary</b>");
+                    str.Append("</p>");
+                    str.Append("<table border='1' style='font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;'>");
+                    str.Append("<tbody>");
+                    str.Append("<tr>");
+                    str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'></th>");
+                    str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Total Entry</th>");
+                    str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Entry done by Vendors</th>");
+                    str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Entry done by VIL Emp</th>");
+                    str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>% of Entry done by VIL Employee</th>");
+                    str.Append("</tr>");
+
+                    int TotalEntry = 0;
+                    int TotaldoneByVendors = 0;
+                    int TotaldoneByEMp = 0;
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        string RowTitle = string.Empty;
+                        string ConditionValue = string.Empty;
+
+                        if (i == 0)
+                        {
+                            ConditionValue = "CRM";
+                            RowTitle = "RM Vendors";
+                        }
+                        else if (i == 1)
+                        {
+                            ConditionValue = "CPM";
+                            RowTitle = "PM Vendors";
+                        }
+                        else
+                        {
+                            RowTitle = "Total";
+                        }
+                        if (i == 0 || i == 1)
+                        {
+                            var TotalCnt = (from c in objODCH
+                                            join d in _dbContext.OEMPs on c.CreatedBy equals d.EmpID
+                                            where d.EmpCode.ToUpper().StartsWith(ConditionValue)
+
+                                            select c).Count();
+                            TotalEntry += TotalCnt;
+                            var IPAddressList = _dbContext.OIPAs.Select(x => x.IPAddress).ToList();
+                            var TotalEntryDoneByVendorsCnt = (from c in objODCH
+                                                              join d in _dbContext.OEMPs on c.CreatedBy equals d.EmpID
+                                                              where d.EmpCode.ToUpper().StartsWith(ConditionValue) &&
+                                                             !IPAddressList.Contains(c.IPADDRESS)
+                                                              select c).Count();
+                            TotaldoneByVendors += TotalEntryDoneByVendorsCnt;
+
+                            var TotalEntryDoneByEmployeeCnt = (from c in objODCH
+                                                               join d in _dbContext.OEMPs on c.CreatedBy equals d.EmpID
+                                                               join f in _dbContext.OIPAs on c.IPADDRESS equals f.IPAddress
+                                                               where d.EmpCode.ToUpper().StartsWith(ConditionValue) &&
+                                                               (f.Type.Equals("VD"))
+                                                               select c).Count();
+                            TotaldoneByEMp += TotalEntryDoneByEmployeeCnt;
+
+                            decimal EmpPer = 0;
+                            if (TotalEntryDoneByEmployeeCnt != 0)
+                                EmpPer = (TotalEntryDoneByEmployeeCnt * 100) / TotalCnt;
+
+                            str.Append("<tr>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + RowTitle + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotalCnt + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotalEntryDoneByVendorsCnt + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotalEntryDoneByEmployeeCnt + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + Math.Round(EmpPer) + "% </td>");
+                            str.Append("</tr>");
+                        }
+                        else
+                        {
+                            decimal EmpPer = 0;
+                            if (TotaldoneByEMp != 0)
+                                EmpPer = (TotaldoneByEMp * 100) / TotalEntry;
+                            str.Append("<tr>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + RowTitle + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotalEntry + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotaldoneByVendors + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + TotaldoneByEMp + "</td>");
+                            str.Append("<td style='text-align:left;padding: 6px;'>" + Math.Round(EmpPer) + "% </td>");
+                            str.Append("</tr>");
+                        }
+                    }
+                    str.Append("</tbody>");
+                    str.Append("</table>");
+
+                    // Adding second and third table.
+                    for (int j = 0; j <= 1; j++)
+                    {
+                        List<ODCH> objCMorPM;
+                        if (j == 0)
+                        {
+                            str.Append("<p><br /><br /><b> (2)RM Vendors List( Which entry done by VIL Employee)</b></p>");
+
+                            objCMorPM = (from c in objODCH
+                                         join d in _dbContext.OEMPs on c.CreatedBy equals d.EmpID
+                                         join f in _dbContext.OIPAs on c.IPADDRESS equals f.IPAddress
+                                         where d.EmpCode.ToUpper().StartsWith("CRM") && f.Type.Equals("VD")
+                                         select c).ToList();
+                        }
+                        else
+                        {
+                            str.Append("<p><br /><br /><b> (3)PM Vendors List( Which entry done by VIL Employee)</b></p>");
+                            objCMorPM = (from c in objODCH
+                                         join d in _dbContext.OEMPs on c.CreatedBy equals d.EmpID
+                                         join f in _dbContext.OIPAs on c.IPADDRESS equals f.IPAddress
+                                         where d.EmpCode.ToUpper().StartsWith("CPM") && f.Type.Equals("VD")
+                                         select c).ToList();
+                        }
+
+                        str.Append("<table border='1' style='font-size:12px;color:#333333;width:100%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;'>");
+                        str.Append("<tbody>");
+                        str.Append("<tr>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Sr. no</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Vendor Code</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Vendor Name</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>PO No.</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>PO Date</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>DC No.</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>DC Date</th>");
+                        str.Append("<th style='font-size:12px;background-color:#ddd;border-width: 1px;padding: 8px;border-style: solid;border-color: #b1b1b1;text-align:left;'>Dispatch Entry Done By</th>");
+                        str.Append("</tr>");
+
+                        if (objCMorPM.Count() == 0)
+                        {
+                            str.Append("<tr>");
+                            str.Append("<td colspan='8'>No records found.</td>");
+                            str.Append("</tr>");
+                        }
+                        else                      // Add Material Tab
+                        {
+                            objCMorPM = objCMorPM.OrderByDescending(x => x.CreatedDate).ToList();
+                            int i = 1;
+
+                            foreach (ODCH obj in objCMorPM)
+                            {
+                                string VendorCode = "";
+                                string VendorName = "";
+                                string IpAddress = "";
+
+                                if (_dbContext.OEMPs.Any(x => x.EmpID == obj.CreatedBy))
+                                {
+                                    VendorCode = _dbContext.OEMPs.FirstOrDefault(x => x.EmpID == obj.CreatedBy).EmpCode;
+                                    VendorName = _dbContext.OEMPs.FirstOrDefault(x => x.EmpID == obj.CreatedBy).Name;
+                                }
+
+                                if (!string.IsNullOrEmpty(obj.IPADDRESS))
+                                {
+                                    if (_dbContext.OIPAs.Any(x => x.IPAddress == obj.IPADDRESS && x.Type == "VC"))
+                                        IpAddress = "VC-ERP (" + obj.IPADDRESS + ")";
+                                    else if (_dbContext.OIPAs.Any(x => x.IPAddress == obj.IPADDRESS && x.Type == "VD"))
+                                        IpAddress = "Vadilal (" + obj.IPADDRESS + ")";
+                                    else
+                                        IpAddress = "Vendor (" + obj.IPADDRESS + ")";
+                                }
+                                str.Append("<tr>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + Convert.ToString(i) + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + VendorCode + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + VendorName + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + obj.OPRO.PurchaseOrderCode + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + obj.OPRO.OrderDate.Value.ToString("dd-MMM-yyyy") + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + obj.DispatchCode + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + obj.DispatchDate.Value.ToString("dd-MMM-yyyy") + "</td>");
+                                str.Append("<td style='text-align:left;padding: 6px;'>" + IpAddress + "</td>");
+                                str.Append("</tr>");
+                                i = i + 1;
+                            }
+                        }
+                        str.Append("</tbody>");
+                        str.Append("</table>");
+                    }
+
+
+                    str.Append("<p><br /></p>");
+                    str.Append("<p>Thanking you,<br /></p>");
+                    str.Append("<p>From, Team Vadilal <br /><br /></p>");
+                    str.Append("</td>");
+                    str.Append("</tr>");
+                    str.Append("<tr>");
+                    str.Append("<td align='center' style='padding: 10px; background:#0c4da2;'>");
+                    str.Append("<p style='margin:0; color:#ffffff; font-size:12px; line-height:18px; font-family:&#39;Trebuchet MS&#39;,Arial,Helvetica,sans-serif;'>© Vadilal Industries Ltd</p>");
+                    str.Append("</td>");
+                    str.Append("</tr>");
+                    str.Append("</tbody>");
+                    str.Append("</table>");
+                    str.Append("</td>");
+                    str.Append("</tr>");
+                    str.Append("</tbody>");
+                    str.Append("</table>");
+                    body = str.ToString();
+                            try
+                            {
+                                MailMessage msg = new MailMessage();
+                                try
+                                {
+
+                                    fromEmail = objMail.MailUserID;
+                                    password = objMail.MailPassword;
+                                    portNo = objMail.Port;
+                                    enableSsl = objMail.EnableSsl;
+                                    smtpClient = objMail.SMTPClient;
+                                    userName = objMail.UserName;
+
+                                    msg.From = new MailAddress(fromEmail);
+                                    msg.IsBodyHtml = true;
+                                    msg.Subject = "Dispatch Register";
+                                    msg.Body = body;
+                                    MSEND objSend = _dbContext.MSENDs.FirstOrDefault(x => x.SendDocument == "DCHMail" && x.PlantCode == "0");
+                                    if (objSend != null)
+                                    {
+                                        if (!string.IsNullOrEmpty(objSend.CCMailID))
+                                        {
+                                            var allEmails = objSend.CCMailID.Split(',');
+                                            string validCCEmailID = "";
+                                            string trueMail = "";
+                                            foreach (string sf in allEmails)
+                                            {
+                                                if (!string.IsNullOrEmpty(sf))
+                                                {
+                                                    trueMail = sf.Replace("'", "");
+                                                    //if (IsValidEmailAddress(trueMail))
+                                                    //{
+                                                    validCCEmailID += trueMail.Trim() + ",";
+                                                    //}
+                                                }
+                                            }
+                                            if (!string.IsNullOrEmpty(validCCEmailID))
+                                            {
+                                                validCCEmailID = validCCEmailID.Remove(validCCEmailID.Length - 1);
+                                                msg.CC.Add(validCCEmailID);
+                                            }
+
+                                        }
+                                        if (!string.IsNullOrEmpty(objSend.BCCMailID))
+                                        {
+
+                                            var allEmails = objSend.BCCMailID.Split(',');
+                                            string validBCCEmailID = "";
+                                            string trueMail = "";
+                                            foreach (string sf in allEmails)
+                                            {
+                                                if (!string.IsNullOrEmpty(sf))
+                                                {
+                                                    trueMail = sf.Replace("'", "");
+                                                    //if (IsValidEmailAddress(trueMail))
+                                                    //{
+                                                    validBCCEmailID += trueMail.Trim() + ",";
+                                                    //}
+                                                }
+                                            }
+                                            if (!string.IsNullOrEmpty(validBCCEmailID))
+                                            {
+                                                validBCCEmailID = validBCCEmailID.Remove(validBCCEmailID.Length - 1);
+                                                msg.Bcc.Add(validBCCEmailID);
+                                            }
+                                        }
+                                        if (!string.IsNullOrEmpty(objSend.ToMailID))
+                                        {
+                                            var allEmails = objSend.ToMailID.Split(',');
+                                            string validTOEmailID = "";
+                                            string trueMail = "";
+                                            foreach (string sf in allEmails)
+                                            {
+                                                if (!string.IsNullOrEmpty(sf))
+                                                {
+                                                    trueMail = sf.Replace("'", "");
+                                                    //if (IsValidEmailAddress(trueMail))
+                                                    //{
+                                                    validTOEmailID += trueMail.Trim() + ",";
+                                                    //}
+                                                }
+                                            }
+                                            if (!string.IsNullOrEmpty(validTOEmailID))
+                                            {
+                                                validTOEmailID = validTOEmailID.Remove(validTOEmailID.Length - 1);
+                                                msg.To.Add(validTOEmailID);
+                                            }
+                                        }
+                                    }
+
+
+                                    SmtpClient smtp = new SmtpClient(smtpClient);
+                                    smtp.Port = portNo;
+                                    smtp.UseDefaultCredentials = false;
+
+                                    if (string.IsNullOrEmpty(userName))
+                                    {
+                                        smtp.Credentials = new System.Net.NetworkCredential(fromEmail, password);
+                                    }
+                                    else
+                                    {
+                                        smtp.Credentials = new System.Net.NetworkCredential(userName, password);
+                                    }
+
+                                    smtp.EnableSsl = enableSsl;
+                                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                                    //smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                                    smtp.Send(msg);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw ex;
+                                }
+                                finally
+                                {
+                                    msg.Dispose();
+                                }
+                                _dbContext.SaveChanges();
+                                TraceService(strPath, "Process Completed. @ " + DateTime.Now.ToString());
+                            }
+                            catch (Exception ex)
+                            {
+                                TraceService(strPath, Common.GetString(ex) + " @ " + DateTime.Now.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceService(strPath, Common.GetString(ex) + " @ " + DateTime.Now.ToString());
+            }
+
+            #endregion

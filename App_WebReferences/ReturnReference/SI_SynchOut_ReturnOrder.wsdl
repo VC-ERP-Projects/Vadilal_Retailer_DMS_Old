@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:p1="http://vadilal.com/DMS_to_SAP/ReturnOrder" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="SI_SynchOut_ReturnOrder" targetNamespace="http://vadilal.com/DMS_to_SAP/ReturnOrder" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_SI_SynchOut_ReturnOrder" />
+  <wsdl:types>
+    <xsd:schema xmlns="http://vadilal.com/DMS_to_SAP/ReturnOrder" targetNamespace="http://vadilal.com/DMS_to_SAP/ReturnOrder" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="MT_ReturnOrder_Request" type="p1:DT_ReturnOrder_Request" />
+      <xsd:element name="MT_ReturnOrder_Response" type="p1:DT_ReturnOrder_Response" />
+      <xsd:complexType name="DT_ReturnOrder_Request">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">88dadb13dc5911e5996a00000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="INVOICE_NO" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">1566c92e9cb411e5c3e9006073232fde</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="REASON" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">92a2a4d3dc5911e5a640006073232fde</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="IT_ITEM">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">1566c9339cb411e59c10006073232fde</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">1566c9329cb411e59786006073232fde</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="MATERIAL_NO" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">1566c92f9cb411e598c7006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="QUANTITY" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">1566c9309cb411e5909b006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="POSITION_NO" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">1566c9319cb411e583c2006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="UNIT" type="xsd:string" />
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DT_ReturnOrder_Response">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">945e50d4ec3611e5ad3300000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="MESSAGE" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">91d0ae03eb6211e58daf006073adbec5</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="FLAG" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">91d0ae04eb6211e5c24c006073adbec5</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="NUMBER_DOC" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">91d0ae05eb6211e5cfb0006073adbec5</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="FAULTY">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">dbee6641eb6211e5832f006073adbec5</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="ITEM">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">dbee6640eb6211e5cf4d006073adbec5</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="MSG_TYPE" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">dbee663deb6211e5af96006073adbec5</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="DESCRIPTION" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">dbee663eeb6211e596c1006073adbec5</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="MATERIAL" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">dbee663feb6211e5a4d8006073adbec5</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="MT_ReturnOrder_Request">
+    <wsdl:documentation />
+    <wsdl:part name="MT_ReturnOrder_Request" element="p1:MT_ReturnOrder_Request" />
+  </wsdl:message>
+  <wsdl:message name="MT_ReturnOrder_Response">
+    <wsdl:documentation />
+    <wsdl:part name="MT_ReturnOrder_Response" element="p1:MT_ReturnOrder_Response" />
+  </wsdl:message>
+  <wsdl:portType name="SI_SynchOut_ReturnOrder">
+    <wsdl:documentation />
+    <wsdl:operation name="SI_SynchOut_ReturnOrder">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_SI_SynchOut_ReturnOrder" />
+      </wsp:Policy>
+      <wsdl:input message="p1:MT_ReturnOrder_Request" />
+      <wsdl:output message="p1:MT_ReturnOrder_Response" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SI_SynchOut_ReturnOrderBinding" type="p1:SI_SynchOut_ReturnOrder">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="SI_SynchOut_ReturnOrder">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SI_SynchOut_ReturnOrderService">
+    <wsdl:port name="HTTP_Port" binding="p1:SI_SynchOut_ReturnOrderBinding">
+      <address location="http://vilpidev.vadilal.com:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_ReturnOrder&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FReturnOrder" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:SI_SynchOut_ReturnOrderBinding">
+      <address location="https://vilpidev.vadilal.com:50001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_ReturnOrder&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FReturnOrder" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

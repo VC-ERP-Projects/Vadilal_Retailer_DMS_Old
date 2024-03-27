@@ -1,0 +1,528 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.OleDb;
+using System.IO;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Transactions;
+using System.Collections.Specialized;
+using System.Net;
+using System.Data.Entity.Validation;
+
+public partial class MyAccount_UploadFile : System.Web.UI.Page
+{
+
+    #region Declaration
+
+    protected int UserID;
+    protected decimal ParentID;
+    protected string MainDir;
+    protected String AuthType;
+    DDMSEntities ctx;
+    #endregion
+
+    #region PageLoad
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        ScriptManager scriptManager = ScriptManager.GetCurrent(this.Page);
+        scriptManager.RegisterPostBackControl(btnCUpload);
+        ValidateUser();
+
+    }
+    #endregion
+
+    #region Helper Method
+
+    public override void VerifyRenderingInServerForm(Control control)
+    {
+        //required to avoid the runtime error "  
+        //Control 'GridView1' of type 'GridView' must be placed inside a form tag with runat=server."  
+    }
+
+    public void ValidateUser()
+    {
+        if (Session["UserID"] != null && Session["ParentID"] != null &&
+          Int32.TryParse(Session["UserID"].ToString(), out UserID) && Decimal.TryParse(Session["ParentID"].ToString(), out ParentID))
+        {
+            ctx = new DDMSEntities();
+            int EGID = Convert.ToInt32(Session["GroupID"]);
+            int CustType = Convert.ToInt32(Session["Type"]);
+
+            int lIndex = Request.ServerVariables["script_name"].ToString().LastIndexOf('/');
+            string pagename = Request.ServerVariables["script_name"].ToString().Substring(lIndex + 1);
+            var Auth = ctx.GRP1.Include("OMNU").FirstOrDefault(x => x.OMNU.PageName == pagename && x.EmpGroupID == EGID && x.ParentID == ParentID);
+            if (Auth == null || Auth.AuthorizationType == "N")
+                Response.Redirect("~/AccessError.aspx");
+            else if (!(CustType == 1 ? Auth.OMNU.Company : CustType == 2 ? Auth.OMNU.CMS : CustType == 3 ? Auth.OMNU.DMS : CustType == 4 ? Auth.OMNU.SS : false))
+                Response.Redirect("~/AccessError.aspx");
+            else
+                AuthType = Auth.AuthorizationType;
+        }
+        else
+        {
+            Response.Redirect("~/Login.aspx");
+        }
+    }
+
+
+
+    
+
+    #endregion
+
+    #region TraceService
+    private void TraceService(string path, string content)
+    {
+        FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+        StreamWriter sw = new StreamWriter(fs);
+        sw.BaseStream.Seek(0, SeekOrigin.End);
+        sw.WriteLine(content);
+        sw.Close();
+    }
+    #endregion
+
+    #region TransferCreateCSV
+    public static void TransferCreateCSV(string filePath, DataTable dt, DataRow[] drs)
+    {
+        StreamWriter sw = null;
+        int iColCount = dt.Columns.Count;
+        if (!File.Exists(filePath))
+        {
+            sw = new StreamWriter(filePath, false);
+
+            for (int i = 0; i < iColCount; i++)
+            {
+                sw.Write(dt.Columns[i]);
+                if (i < iColCount - 1)
+                {
+                    sw.Write(",");
+                }
+            }
+            sw.Write(sw.NewLine);
+        }
+        else
+            sw = new StreamWriter(filePath, true);
+
+        foreach (DataRow dr in drs)
+        {
+            for (int i = 0; i < iColCount; i++)
+            {
+                if (!Convert.IsDBNull(dr[i]))
+                {
+                    sw.Write(dr[i].ToString());
+                }
+                if (i < iColCount - 1)
+                {
+                    sw.Write(",");
+                }
+            }
+            sw.Write(sw.NewLine);
+        }
+        sw.Close();
+    }
+    #endregion
+
+    #region TransferCSVToTable
+    public static void TransferCSVToTable(string filePath, DataTable dt)
+    {
+        try
+        {
+
+
+            string[] csvRows = System.IO.File.ReadAllLines(filePath);
+            string[] fields = null;
+            bool head = true;
+            foreach (string csvRow in csvRows)
+            {
+                if (head)
+                {
+                    if (dt.Columns.Count == 0)
+                    {
+                        fields = csvRow.Split(',');
+                        foreach (string column in fields)
+                        {
+                            DataColumn datecolumn = new DataColumn(column);
+                            datecolumn.AllowDBNull = true;
+                            dt.Columns.Add(datecolumn);
+                        }
+                    }
+                    head = false;
+                }
+                else
+                {
+                    fields = csvRow.Split(',');
+                    DataRow row = dt.NewRow();
+                    row.ItemArray = new object[fields.Length];
+                    row.ItemArray = fields;
+                    dt.Rows.Add(row);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    #endregion
+
+    #region Button_click
+
+    protected void btnCUpload_Click(object sender, EventArgs e)
+    {
+        string logfile = Server.MapPath("~/Document/UploadedFiles/Log.txt");
+
+        try
+        {
+            if (flCUpload.HasFile)
+            {
+                string fileName = Path.Combine(Server.MapPath("~/Document/UploadedFiles"), Guid.NewGuid().ToString("N") + Path.GetExtension(flCUpload.PostedFile.FileName));
+                flCUpload.PostedFile.SaveAs(fileName);
+                string ext = Path.GetExtension(flCUpload.PostedFile.FileName);
+                if (ext.ToLower() == ".csv")
+                {
+                    DataTable dtPOH = new DataTable();
+                    DataTable dtErrPOH = new DataTable();
+                    DataTable dtSucPOH = new DataTable();
+
+                    TransferCSVToTable(fileName, dtPOH);
+
+                    if (dtPOH != null && dtPOH.Rows != null && dtPOH.Rows.Count > 0)
+                    {
+                        using (TransactionScope tx = new TransactionScope())
+                        {
+                            using (DDMSEntities ctx = new DDMSEntities())
+                            {
+                                int ItemID = ctx.GetKey("OITM", "ItemID", "", 0, 0).FirstOrDefault().Value;
+                                int ItemMunitID = ctx.GetKey("ITM1", "ItemMunitID", "", 0, 0).FirstOrDefault().Value;
+                                int ItemGroupID = ctx.GetKey("OITB", "ItemGroupID", "", 0, 0).FirstOrDefault().Value;
+                                int ItemSubGroupID = ctx.GetKey("OITG", "ItemSubGroupID", "", 0, 0).FirstOrDefault().Value;
+                                int UnitID = ctx.GetKey("OUNT", "UnitID", "", 0, 0).FirstOrDefault().Value;
+                                int TypeID = ctx.GetKey("OITP", "TypeID", "", 0, 0).FirstOrDefault().Value;
+                                int PriceListID = ctx.GetKey("OIPL", "PriceListID", "", 0, 0).FirstOrDefault().Value;
+                                int ItemPriceID = ctx.GetKey("IPL1", "ItemPriceID", "", 0, 0).FirstOrDefault().Value;
+                                int TaxID = ctx.GetKey("OTAX", "TaxID", "", 0, 0).FirstOrDefault().Value;
+
+                                String ItemCode = "";
+                                String GroupName;
+                                String SubGroupName;
+                                String PurchaseUnit;
+                                String SaleUnit;
+                                String IType;
+                                String TaxName;
+
+                                Decimal DecNum = 0;
+
+                                foreach (DataRow item in dtPOH.Rows)
+                                {
+                                    List<string> nullRecords = new List<string>();
+                                    List<string> listmissing = new List<string>();
+
+                                    Dictionary<int, string> listrutnm = new Dictionary<int, string>();
+                                    try
+                                    {
+                                        //Item Code
+                                        OITM objOITM = null;
+
+                                        ItemCode = item[0].ToString();
+
+                                        objOITM = ctx.OITMs.FirstOrDefault(x => x.ItemCode == ItemCode);
+                                        if (objOITM == null)
+                                        {
+                                            objOITM = new OITM();
+                                            objOITM.ItemID = ItemID++;
+                                            objOITM.ItemCode = ItemCode;
+                                            objOITM.CreatedBy = UserID;
+                                            objOITM.CreatedDate = DateTime.Now;
+                                            objOITM.Date = DateTime.Now;
+                                            ctx.OITMs.Add(objOITM);
+                                        }
+                                        if (!String.IsNullOrEmpty(item[1].ToString()))
+                                            objOITM.ItemName = item[1].ToString();
+                                        objOITM.BarCode = objOITM.ItemCode;
+                                        if (!String.IsNullOrEmpty(item[13].ToString()))
+                                            objOITM.GujaratiItemName = item[13].ToString();
+                                        objOITM.UpdatedBy = UserID;
+                                        objOITM.UpdatedDate = DateTime.Now;
+                                        objOITM.ManagedBy = UserID;
+
+                                        IType = item[2].ToString();
+                                        var objOITP = ctx.OITPs.FirstOrDefault(x => x.TypeName == IType);
+                                        if (objOITP != null)
+                                            objOITM.Type = objOITP.TypeID;
+                                        else
+                                        {
+                                            objOITP = new OITP();
+                                            objOITP.TypeID = TypeID++;
+                                            objOITP.TypeName = IType;
+                                            objOITP.Active = true;
+                                            objOITP.CreatedBy = UserID;
+                                            objOITP.CreatedDate = DateTime.Now;
+                                            objOITP.UpdatedBy = UserID;
+                                            objOITP.UpdatedDate = DateTime.Now;
+                                            ctx.OITPs.Add(objOITP);
+
+                                            objOITM.Type = objOITP.TypeID;
+                                        }
+                                        objOITM.IsSellable = Convert.ToBoolean(item[13].ToString());
+                                        objOITM.IsKOT = false;
+                                        objOITM.Active = true;
+
+                                        //Item Group
+                                        GroupName = item[3].ToString();
+                                        var objOITB = ctx.OITBs.FirstOrDefault(x => x.ItemGroupName == GroupName);
+                                        if (objOITB == null)
+                                        {
+                                            objOITB = new OITB();
+                                            objOITB.ItemGroupID = ItemGroupID++;
+                                            objOITB.ItemGroupName = GroupName;
+                                            objOITB.Active = true;
+                                            objOITB.CreatedBy = UserID;
+                                            objOITB.CreatedDate = DateTime.Now;
+                                            objOITB.SortOrder = objOITB.ItemGroupID;
+                                            objOITB.UpdatedBy = UserID;
+                                            objOITB.UpdatedDate = DateTime.Now;
+                                            ctx.OITBs.Add(objOITB);
+                                            objOITM.GroupID = objOITB.ItemGroupID;
+                                        }
+                                        objOITM.GroupID = objOITB.ItemGroupID;
+                                        //Sub Group
+                                        SubGroupName = item[4].ToString();
+                                        var objOITG = ctx.OITGs.FirstOrDefault(x => x.ItemSubGroupName == SubGroupName);
+                                        if (objOITG != null)
+                                            objOITM.SubGroupID = objOITG.ItemSubGroupID;
+                                        else
+                                        {
+                                            objOITG = new OITG();
+                                            objOITG.ItemSubGroupID = ItemSubGroupID++;
+                                            objOITG.ItemSubGroupName = SubGroupName;
+                                            objOITG.ItemGroupID = objOITB.ItemGroupID;
+                                            objOITG.Active = true;
+                                            objOITG.CreatedBy = UserID;
+                                            objOITG.CreatedDate = DateTime.Now;
+                                            objOITG.SortOrder = objOITG.ItemGroupID;
+                                            objOITG.UpdatedBy = UserID;
+                                            objOITG.UpdatedDate = DateTime.Now;
+                                            ctx.OITGs.Add(objOITG);
+                                            objOITM.SubGroupID = objOITG.ItemSubGroupID;
+                                        }
+
+                                        //Tax
+                                        TaxName = item[11].ToString();
+                                        var objOTAX = ctx.OTAXes.FirstOrDefault(x => x.TaxName == TaxName);
+                                        if (objOTAX == null)
+                                        {
+                                            objOTAX = new OTAX();
+                                            objOTAX.TaxID = TaxID++;
+                                            objOTAX.TaxName = TaxName;
+                                            if (Decimal.TryParse(item[12].ToString(), out DecNum))
+                                                objOTAX.Percentage = DecNum;
+                                            else
+                                                objOTAX.Percentage = 0;
+
+                                            objOTAX.Type = "A";
+                                            objOTAX.Formula = "";
+                                            objOTAX.Active = true;
+                                            objOTAX.CreatedBy = UserID;
+                                            objOTAX.CreatedDate = DateTime.Now;
+                                            objOTAX.UpdatedBy = UserID;
+                                            objOTAX.UpdatedDate = DateTime.Now;
+                                            ctx.OTAXes.Add(objOTAX);
+                                        }
+
+                                        //Purchase Unit Master
+                                        PurchaseUnit = item[5].ToString();
+                                        var objPOUNT = ctx.OUNTs.FirstOrDefault(x => x.UnitName == PurchaseUnit);
+                                        if (objPOUNT == null)
+                                        {
+                                            objPOUNT = new OUNT();
+                                            objPOUNT.UnitID = UnitID++;
+                                            objPOUNT.UnitName = PurchaseUnit;
+                                            objPOUNT.Active = true;
+                                            objPOUNT.CreatedBy = UserID;
+                                            objPOUNT.CreatedDate = DateTime.Now;
+                                            objPOUNT.UpdatedBy = UserID;
+                                            objPOUNT.UpdatedDate = DateTime.Now;
+                                            objPOUNT.SyncStatus = false;
+                                            objPOUNT.UnitCode = PurchaseUnit;
+                                            ctx.OUNTs.Add(objPOUNT);
+                                        }
+
+                                        //Item1
+                                        ITM1 objPurUnitITM1 = ctx.ITM1.FirstOrDefault(x => x.ItemID == objOITM.ItemID && x.UnitID == objPOUNT.UnitID);
+                                        if (objPurUnitITM1 == null)
+                                        {
+                                            objPurUnitITM1 = new ITM1();
+                                            objPurUnitITM1.ItemMunitID = ItemMunitID++;
+                                            objPurUnitITM1.UnitID = objPOUNT.UnitID;
+                                            ctx.ITM1.Add(objPurUnitITM1);
+                                        }
+                                        objPurUnitITM1.ItemID = objOITM.ItemID;
+                                        objPurUnitITM1.IsBaseUnit = !Convert.ToBoolean(item[7]);
+                                        if (objPurUnitITM1.IsBaseUnit)
+                                            objPurUnitITM1.Quantity = 1;
+                                        else
+                                            objPurUnitITM1.Quantity = Decimal.TryParse(item[8].ToString(), out DecNum) ? DecNum : 0;
+                                        objPurUnitITM1.UnitType = 2;
+                                        objPurUnitITM1.Price = Decimal.TryParse(item[9].ToString(), out DecNum) ? DecNum : 0;
+                                        objPurUnitITM1.Currency = "INR";
+                                        objPurUnitITM1.Active = true;
+
+                                        //Purchase PriceList
+                                        OIPL objOIPL = ctx.OIPLs.FirstOrDefault(x => x.Name == "PurchasePrice");
+                                        if (objOIPL == null)
+                                        {
+                                            objOIPL = new OIPL();
+                                            objOIPL.Name = "PurchasePrice";
+                                            objOIPL.PriceListID = PriceListID++;
+                                            objOIPL.CreatedDate = DateTime.Now;
+                                            objOIPL.CreatedBy = UserID;
+                                            ctx.OIPLs.Add(objOIPL);
+                                        }
+                                        objOIPL.Currency = Constant.Currency;
+                                        objOIPL.EffectiveDate = DateTime.Now;
+                                        objOIPL.Active = true;
+                                        objOIPL.UpdatedDate = DateTime.Now;
+                                        objOIPL.UpdatedBy = UserID;
+
+                                        IPL1 objIPL1 = new IPL1();
+                                        objIPL1.ItemPriceID = ItemPriceID++;
+                                        objIPL1.ItemID = objOITM.ItemID;
+                                        objIPL1.UnitID = objPurUnitITM1.UnitID;
+                                        objIPL1.UnitPrice = objPurUnitITM1.Price;
+                                        objIPL1.DiscountPer = 0;
+                                        objIPL1.DiscountAmt = 0;
+                                        objIPL1.SellPrice = objPurUnitITM1.Price;
+                                        objIPL1.TaxID = objOTAX.TaxID;
+                                        objOIPL.IPL1.Add(objIPL1);
+
+                                        //Sale Unit Master                                       
+                                        SaleUnit = item[6].ToString();
+                                        var objSOUNT = ctx.OUNTs.FirstOrDefault(x => x.UnitName == SaleUnit);
+                                        if (objSOUNT == null)
+                                        {
+                                            objSOUNT = new OUNT();
+                                            objSOUNT.UnitID = UnitID++;
+                                            objSOUNT.UnitName = SaleUnit;
+                                            objSOUNT.Active = true;
+                                            objSOUNT.CreatedBy = UserID;
+                                            objSOUNT.CreatedDate = DateTime.Now;
+                                            objSOUNT.UpdatedBy = UserID;
+                                            objSOUNT.UpdatedDate = DateTime.Now;
+                                            objSOUNT.UnitCode = SaleUnit;
+                                            ctx.OUNTs.Add(objSOUNT);
+                                        }
+
+                                        ITM1 objSaleUnitITM1 = ctx.ITM1.FirstOrDefault(x => x.ItemID == objOITM.ItemID && x.UnitID == objPOUNT.UnitID);
+                                        if (objSaleUnitITM1 == null)
+                                        {
+                                            objSaleUnitITM1 = new ITM1();
+                                            objSaleUnitITM1.ItemMunitID = ItemMunitID++;
+                                            objSaleUnitITM1.UnitID = objSOUNT.UnitID;
+                                            ctx.ITM1.Add(objSaleUnitITM1);
+                                        }
+
+                                        objSaleUnitITM1.ItemID = objOITM.ItemID;
+
+                                        objSaleUnitITM1.IsBaseUnit = Convert.ToBoolean(item[7]);
+                                        objSaleUnitITM1.UnitType = 1;
+                                        objSaleUnitITM1.Price = Decimal.TryParse(item[10].ToString(), out DecNum) ? DecNum : 0;
+                                        if (objSaleUnitITM1.IsBaseUnit)
+                                            objSaleUnitITM1.Quantity = 1;
+                                        else
+                                            objSaleUnitITM1.Quantity = Decimal.TryParse(item[8].ToString(), out DecNum) ? DecNum : 0;
+
+                                        objSaleUnitITM1.Currency = "INR";
+                                        objSaleUnitITM1.Active = true;
+
+
+                                        //Sale PriceList
+                                        OIPL objSalePrice = ctx.OIPLs.FirstOrDefault(x => x.Name == "SalePrice");
+                                        if (objSalePrice == null)
+                                        {
+                                            objSalePrice = new OIPL();
+                                            objSalePrice.Name = "SalePrice";
+                                            objSalePrice.PriceListID = PriceListID++;
+                                            objSalePrice.CreatedDate = DateTime.Now;
+                                            objSalePrice.CreatedBy = UserID;
+                                            ctx.OIPLs.Add(objSalePrice);
+                                        }
+                                        objSalePrice.Currency = Constant.Currency;
+                                        objSalePrice.EffectiveDate = DateTime.Now;
+                                        objSalePrice.Active = true;
+                                        objSalePrice.UpdatedDate = DateTime.Now;
+                                        objSalePrice.UpdatedBy = UserID;
+
+                                        IPL1 objSaleIPL1 = new IPL1();
+                                        objSaleIPL1.ItemPriceID = ItemPriceID++;
+                                        objSaleIPL1.ItemID = objOITM.ItemID;
+                                        objSaleIPL1.UnitID = objSaleUnitITM1.UnitID;
+                                        objSaleIPL1.UnitPrice = objSaleUnitITM1.Price;
+                                        objSaleIPL1.DiscountPer = 0;
+                                        objSaleIPL1.DiscountAmt = 0;
+                                        objSaleIPL1.SellPrice = objSaleUnitITM1.Price;
+                                        objSaleIPL1.TaxID = objOTAX.TaxID;
+                                        objSalePrice.IPL1.Add(objSaleIPL1);
+
+                                        ctx.SaveChanges();
+                                    }
+                                    catch (DbEntityValidationException ex)
+                                    {
+                                        var errorMessages = ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage);
+                                        if (ex.InnerException != null)
+                                            if (ex.InnerException.InnerException != null)
+                                                TraceService(logfile, ItemCode + " is not uploaded.\n" + ex.InnerException.InnerException.Message);
+                                            else
+                                                TraceService(logfile, ItemCode + " is not uploaded.\n" + ex.InnerException.Message);
+                                        else
+                                            TraceService(logfile, ItemCode + " is not uploaded.\n" + ex.Message);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        TraceService(logfile, ItemCode + " is not uploaded.\n" + ex.Message);
+                                    }
+
+                                }
+                            }
+                            tx.Complete();
+                        }
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('Process completed.',1);", true);
+                    }
+                    else
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('No record found.',3);", true);
+                }
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('File format must be a CSV.',3);", true);
+            }
+            else
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "", "ModelMsg('Please Select File.',3);", true);
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+                if (ex.InnerException.InnerException != null)
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + ex.InnerException.InnerException.Message.Replace("'", "") + "',2);", true);
+                else
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + ex.InnerException.Message.Replace("'", "") + "',2);", true);
+            else
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "ModelMsg", "ModelMsg('" + ex.Message.Replace("'", "") + "',2);", true);
+        }
+
+    }
+
+    #endregion
+}
+
+
+
+
+
+
+
+
+

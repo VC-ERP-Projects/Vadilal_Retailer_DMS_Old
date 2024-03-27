@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:p1="http://vadilal.com/DMS_to_SAP/IndentCreation" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="SI_SynchOut_IndentCreation" targetNamespace="http://vadilal.com/DMS_to_SAP/IndentCreation" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_SI_SynchOut_IndentCreation" />
+  <wsdl:types>
+    <xsd:schema xmlns="http://vadilal.com/DMS_to_SAP/IndentCreation" targetNamespace="http://vadilal.com/DMS_to_SAP/IndentCreation" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="MT_IndentCreation_Response" type="p1:DT_IndentCreation_Response" />
+      <xsd:element name="MT_IndentCreation_Request" type="p1:DT_IndentCreation_Request" />
+      <xsd:complexType name="DT_IndentCreation_Response">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">d8000b5369fc11e6a13600000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="MESSAGE" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">4668ca7747e911e5a543006073232fde</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="FLAG" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">155cc0e174c011e58a05006073232fde</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="NUMBER_INDENT" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">dbf7a31769fc11e6ae2a006073adbec5</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="STATUS" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DT_IndentCreation_Request">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">b35de02034ce11e8947e00000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="IT_HEADER">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">5986d7b6466811e58823006073232fde</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">5986d7b2466811e5ba99006073232fde</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="TransactionType" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7a9466811e599e4006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SoldToParty" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7aa466811e5a339006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SalesOrganization" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7ab466811e5c534006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ShipToParty" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7ac466811e5c342006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="DistributionChannel" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7ad466811e590ab006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="Division" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7ae466811e58ada006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="Plant" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7af466811e5c4c5006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="DocumentType" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5986d7b0466811e58a14006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="DMS_REFNO" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">d1c1ca8d34ce11e8834600155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="IT_ITEM">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">5de21a65471d11e5a6d9006073232fde</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">5de21a64471d11e59b30006073232fde</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="MaterialNumber" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5de21a62471d11e5bd4d006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="Quantity" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">5de21a63471d11e5afee006073232fde</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="REPEAT_FLAG" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="MT_IndentCreation_Request">
+    <wsdl:documentation />
+    <wsdl:part name="MT_IndentCreation_Request" element="p1:MT_IndentCreation_Request" />
+  </wsdl:message>
+  <wsdl:message name="MT_IndentCreation_Response">
+    <wsdl:documentation />
+    <wsdl:part name="MT_IndentCreation_Response" element="p1:MT_IndentCreation_Response" />
+  </wsdl:message>
+  <wsdl:portType name="SI_SynchOut_IndentCreation">
+    <wsdl:documentation />
+    <wsdl:operation name="SI_SynchOut_IndentCreation">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_SI_SynchOut_IndentCreation" />
+      </wsp:Policy>
+      <wsdl:input message="p1:MT_IndentCreation_Request" />
+      <wsdl:output message="p1:MT_IndentCreation_Response" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SI_SynchOut_IndentCreationBinding" type="p1:SI_SynchOut_IndentCreation">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="SI_SynchOut_IndentCreation">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SI_SynchOut_IndentCreationService">
+    <wsdl:port name="HTTP_Port" binding="p1:SI_SynchOut_IndentCreationBinding">
+      <address location="http://vilpidev.vadilal.com:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_IndentCreation&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FIndentCreation" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:SI_SynchOut_IndentCreationBinding">
+      <address location="https://vilpidev.vadilal.com:50001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_IndentCreation&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FIndentCreation" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

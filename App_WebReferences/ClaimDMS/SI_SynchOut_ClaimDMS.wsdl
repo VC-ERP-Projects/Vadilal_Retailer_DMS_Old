@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:p1="http://vadilal.com/DMS_to_SAP/Claimdms" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" name="SI_SynchOut_ClaimDMS" targetNamespace="http://vadilal.com/DMS_to_SAP/Claimdms" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_SI_SynchOut_ClaimDMS" />
+  <wsdl:types>
+    <xsd:schema xmlns="http://vadilal.com/DMS_to_SAP/Claimdms" targetNamespace="http://vadilal.com/DMS_to_SAP/Claimdms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="MT_Claimdms_Res" type="p1:DT_Claimdms_Response" />
+      <xsd:element name="MT_Claimdms_req" type="p1:DT_Claimdms_Request" />
+      <xsd:complexType name="DT_Claimdms_Response">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">beab279e8bda11e7b4d000000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="GIT_CLAIMS">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="ITEM">
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="KUNNR" type="xsd:string" />
+                      <xsd:element name="BUKRS" type="xsd:string" />
+                      <xsd:element name="AUGRU" type="xsd:string" />
+                      <xsd:element name="SCH_ID" type="xsd:string" />
+                      <xsd:element name="SCH_STDT" type="xsd:string" />
+                      <xsd:element name="MESSAGE" type="xsd:string" />
+                      <xsd:element name="STATUS" type="xsd:string" />
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DT_Claimdms_Request">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">7f81716bc61111e7a24f00000067ce6a</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="FLAG_C" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">f06a9fae8bd911e7caf000155d607a01</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="GIT_CLAIMS">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">f06aff928bd911e7971200155d607a01</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="ITEM">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">f06aff918bd911e78adc00155d607a01</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="MANDT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06a9faf8bd911e7cd6700155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="KUNNR" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe3e8bd911e7a27a00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="BUKRS" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe3f8bd911e7836900155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="AUGRU" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe408bd911e781dd00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SCH_ID" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe418bd911e7b3b000155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SCH_STDT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe428bd911e7ace700155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SCH_EDDT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe438bd911e7c4b200155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="CLMDT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06abe448bd911e798c200155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="CLM_APRVDT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff848bd911e7cb4500155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="CLM_YRMON" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff858bd911e7992b00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="DIS_CLMAMT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff868bd911e792d900155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="MKT_APRVAMT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff878bd911e7838f00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="MKT_REMDED" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff888bd911e7bdc800155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ERNAM" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff898bd911e7cdcc00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ERDAT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8a8bd911e7a91100155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ERZET" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8b8bd911e7b49b00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ACC_ERNAM" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8c8bd911e7a5e200155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ACC_ERDAT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8d8bd911e7ccf000155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ACC_ERZET" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8e8bd911e7a41200155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ACC_APRVAMT" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff8f8bd911e7a4f100155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="ACC_REMARK" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">f06aff908bd911e7af7400155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="AUTO_MAN" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">7f77f5a7c61111e7afbc00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="TOTSAL_MON" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">7f77f5a8c61111e7bedf00155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="SCHSAL_MON" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">7f77f5a9c61111e7bd7100155d607a01</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                      <xsd:element name="REFNO" type="xsd:string" />
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="MT_Claimdms_req">
+    <wsdl:documentation />
+    <wsdl:part name="MT_Claimdms_req" element="p1:MT_Claimdms_req" />
+  </wsdl:message>
+  <wsdl:message name="MT_Claimdms_Res">
+    <wsdl:documentation />
+    <wsdl:part name="MT_Claimdms_Res" element="p1:MT_Claimdms_Res" />
+  </wsdl:message>
+  <wsdl:portType name="SI_SynchOut_ClaimDMS">
+    <wsdl:documentation />
+    <wsdl:operation name="SI_SynchOut_ClaimDMS">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_SI_SynchOut_ClaimDMS" />
+      </wsp:Policy>
+      <wsdl:input message="p1:MT_Claimdms_req" />
+      <wsdl:output message="p1:MT_Claimdms_Res" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SI_SynchOut_ClaimDMSBinding" type="p1:SI_SynchOut_ClaimDMS">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="SI_SynchOut_ClaimDMS">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SI_SynchOut_ClaimDMSService">
+    <wsdl:port name="HTTP_Port" binding="p1:SI_SynchOut_ClaimDMSBinding">
+      <address location="http://vilpidev.vadilal.com:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_ClaimDMS&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FClaimdms" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:SI_SynchOut_ClaimDMSBinding">
+      <address location="https://vilpidev.vadilal.com:50001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=BC_DMS_DB&amp;receiverParty=&amp;receiverService=&amp;interface=SI_SynchOut_ClaimDMS&amp;interfaceNamespace=http%3A%2F%2Fvadilal.com%2FDMS_to_SAP%2FClaimdms" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

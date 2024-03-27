@@ -1,0 +1,832 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<gujarati>
+
+  <master>
+    <material_master>
+      <lblCode>કોડ </lblCode>
+      <lblName>નામ </lblName>
+      <lblGroup>જૂથ </lblGroup>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblWarehouse>વખાર વિગત </lblWarehouse>
+      <lblVehicle>વાહન વિગત </lblVehicle>
+      <lblIngrediance>સામગ્રી </lblIngrediance>
+      <lblAvailableAfter>પછી ઉપલબ્ધ </lblAvailableAfter>
+      <lblAvailableTill>સુધી ઉપલબ્ધ </lblAvailableTill>
+    </material_master>
+
+    <pricelist_master>
+      <lblName>નામ </lblName>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblDescription>વર્ણન </lblDescription>
+    </pricelist_master>
+
+    <customer_grp_master>
+      <lblName>નામ </lblName>
+      <lblPriceList>ભાવસૂચિ </lblPriceList>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblDescription>વર્ણન </lblDescription>
+    </customer_grp_master>
+
+    <customer_master>
+      <lblCustCode>ગ્રાહક કોડ </lblCustCode>
+      <lblCustName>ગ્રાહક નામ </lblCustName>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblCustGroup>જૂથ </lblCustGroup>
+      <lblPhone>ફોન </lblPhone>
+      <lblFoodLicenceNo>ફૂડ લાયસન્સ નંબર</lblFoodLicenceNo>
+      <lblEmail>ઇમેઇલ </lblEmail>
+      <lblPlant>પ્લાન્ટ પસંદ </lblPlant>
+      <lblFax>ફેક્સ </lblFax>
+      <lblWebSite>વેબસાઇટ </lblWebSite>
+      <lblNotes>નોંધ </lblNotes>
+      <lblBranch>શાખા </lblBranch>
+      <lblBlock>બ્લોક </lblBlock>
+      <lblStreet>સ્ટ્રીટ </lblStreet>
+      <lblNbh>નેબરહુડ </lblNbh>
+      <lblLocation>સ્થાન (ક્ષેત્ર)  </lblLocation>
+      <lblPhoneNo>મોબાઇલ </lblPhoneNo>
+      <lblCity>શહેર </lblCity>
+      <lblZipCode>પિન કોડ </lblZipCode>
+      <lblState>રાજ્ય </lblState>
+      <lblCountry>દેશ </lblCountry>
+      <lblNote>નોંધ </lblNote>
+      <lblFirstName>પ્રથમ નામ </lblFirstName>
+      <lblLastName>છેલ્લું નામ </lblLastName>
+      <lblPhone1>મોબાઇલ </lblPhone1>
+      <lblPhone2>ફોન </lblPhone2>
+      <lblOEmail>સત્તાવાર ઇમેઇલ </lblOEmail>
+      <lblPEmail>વ્યક્તિગત ઇમેઇલ </lblPEmail>
+      <lblDesignation>હોદ્દો </lblDesignation>
+      <lblCPBranch>શાખા </lblCPBranch>
+      <lblDept>વિભાગ </lblDept>
+      <lblCPNotes>નોંધ </lblCPNotes>
+      <lblGLCode>GL કોડ </lblGLCode>
+      <lblGLName>GL નામ </lblGLName>
+      <lblBankName>બેન્ક નામ </lblBankName>
+      <lblBranchCode>શાખા કોડ  </lblBranchCode>
+      <lblIFSC>IFSC કોડ </lblIFSC>
+      <lblCrLmt>ક્રેડિટ મર્યાદા </lblCrLmt>
+      <lblCrDays>ક્રેડિટ દિવસો </lblCrDays>
+      <lblPAN>પાન નંબર  </lblPAN>
+      <lblVAT>વેટ નંબર </lblVAT>
+      <lblCST>સીએસટી નંબર </lblCST>
+      <lblECC>ઈસીસી નંબર </lblECC>
+    </customer_master>
+
+    <employee_grp_master>
+      <lblName>નામ </lblName>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblDescription>વર્ણન </lblDescription>
+      <lblNo>નંબર</lblNo>
+    </employee_grp_master>
+
+    <employee_master>
+      <lblCode>કોડ </lblCode>
+      <lblName>નામ </lblName>
+      <lblBranch>શાખા </lblBranch>
+      <lblWorkPhone>ફોન - EXT</lblWorkPhone>
+      <lblWorkEmail>ઇ-મેલ </lblWorkEmail>
+      <lblMobile>મોબાઇલ - હોમ </lblMobile>
+      <lblPersonnelEmail>વ્યક્તિગત ઇ-મેલ  </lblPersonnelEmail>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblGender>જાતિ </lblGender>
+      <lblDescription>નોંધ </lblDescription>
+      <lblTypeAddress>પ્રકાર </lblTypeAddress>
+      <lblblock>બ્લોક </lblblock>
+      <lblStreet>સ્ટ્રીટ </lblStreet>
+      <lblLocation>સ્થાન </lblLocation>
+      <lblCity>શહેર </lblCity>
+      <lblState>રાજ્ય </lblState>
+      <lblCountry>દેશ </lblCountry>
+      <lblPinCode>પિન કોડ </lblPinCode>
+      <lblContactPerson>સંપર્ક વ્યક્તિ </lblContactPerson>
+      <lblMobileAddress>મોબાઇલ - ફોન </lblMobileAddress>
+      <lblGLCode>GL કોડ </lblGLCode>
+      <lblDescriptionAccount>વર્ણન </lblDescriptionAccount>
+      <lblGLGroup>GL ગ્રુપ </lblGLGroup>
+      <lblCreditLimit> ક્રેડિટ મર્યાદા </lblCreditLimit>
+      <lblCreditDays> ક્રેડિટ દિવસો </lblCreditDays>
+      <lblPaymentMode>ચુકવણી પ્રકાર </lblPaymentMode>
+      <lblBankName>બેન્ક નામ </lblBankName>
+      <lblBranchCode>શાખા કોડ </lblBranchCode>
+      <lblPanNumber>પાન નંબર </lblPanNumber>
+      <lblSalary>પગાર </lblSalary>
+      <lblTypeHR>પ્રકાર </lblTypeHR>
+      <lblGroup>જૂથ </lblGroup>
+      <lblUserName>યુઝર નામ </lblUserName>
+      <lblSecQue>સુરક્ષા પ્રશ્ન </lblSecQue>
+      <lblEducation>શિક્ષણ </lblEducation>
+      <lblLicenceNumber>લાયસન્સ સંખ્યા - સમાપ્તિ </lblLicenceNumber>
+      <lblJoiningDate>જોડાયેલ તારીખ </lblJoiningDate>
+      <lblPassword>પાસવર્ડ </lblPassword>
+      <lblSecAns>સુરક્ષા જવાબ </lblSecAns>
+      <lblCMobile>ક્લિયર મોબાઇલ</lblCMobile>
+    </employee_master>
+
+    <warehouse_master>
+      <lblNo>નંબર</lblNo>
+      <lblName>નામ </lblName>
+      <lblType>પ્રકાર </lblType>
+      <lblBlock>બ્લોક </lblBlock>
+      <lblLocation>સ્થાન (ક્ષેત્ર) </lblLocation>
+      <lblPinCode>પિન કોડ </lblPinCode>
+      <lblContactPerson>સંપર્ક વ્યક્તિ </lblContactPerson>
+      <lblPhone>ફોન </lblPhone>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblDefault>ડિફૉલ્ટ </lblDefault>
+      <lblWarehouseSize>વખાર કદ </lblWarehouseSize>
+      <lblStreet>સ્ટ્રીટ </lblStreet>
+      <lblCity>શહેર </lblCity>
+      <lblState>રાજ્ય </lblState>
+      <lblCountry>દેશ </lblCountry>
+      <lblMobile>મોબાઇલ </lblMobile>
+      <lblNotes>નોંધ </lblNotes>
+      <lblOwner>માલિક</lblOwner>
+      <lblRCC>આરસીસી</lblRCC>
+      <lblRoof>છાપરું</lblRoof>
+      <lblNetArea>નેટ-કુલ વિસ્તાર</lblNetArea>
+    </warehouse_master>
+
+    <question_master>
+      <lblQName>પ્રશ્ન નામ </lblQName>
+      <lblQueNo>પ્રશ્ન નં. </lblQueNo>
+      <lblType>પ્રકાર </lblType>
+      <lblActive>સક્રિય </lblActive>
+      <lblDoctype>દસ્તાવેજ પ્રકાર </lblDoctype>
+      <lblCampaign>પ્રચાર </lblCampaign>
+      <lblDesc>વર્ણન </lblDesc>
+    </question_master>
+
+    <glgroup_master>
+      <lblGLGrpName>નામ </lblGLGrpName>
+      <lblActive>સક્રિય </lblActive>
+      <lblDesc>વર્ણન </lblDesc>
+    </glgroup_master>
+
+    <payment_terms_master>
+      <lblPayment>નામ </lblPayment>
+      <lblActive>સક્રિય </lblActive>
+      <lblDesc>વર્ણન </lblDesc>
+    </payment_terms_master>
+  </master>
+
+  <route>
+    <tollbooth_master>
+      <lblName>નામ </lblName>
+      <lblCity>શહેર </lblCity>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblHeavyVehicle>ભારે વાહન </lblHeavyVehicle>
+      <lblTruckTempo>ટ્રક / ટેમ્પો </lblTruckTempo>
+      <lblRikshow>રીક્ષા </lblRikshow>
+      <lblNotes>નોંધ </lblNotes>
+    </tollbooth_master>
+
+    <route_master>
+      <lbl_RouteCode>રૂટ કોડ </lbl_RouteCode>
+      <lblRouteName>રૂટ નામ </lblRouteName>
+      <lblAStatus>સક્રિય </lblAStatus>
+      <lblDesc>વર્ણન </lblDesc>
+      <lblSchedule>શેડ્યૂલ</lblSchedule>
+      <lblPrefSale>Pref. વેચાણ વ્યક્તિ </lblPrefSale>
+      <lblAvgBusiness>સરેરાશ વ્યાપાર </lblAvgBusiness>
+      <lblAvgExpense>સરેરાશ ખર્ચ </lblAvgExpense>
+      <lblPrefDrive>Pref. ડ્રાઈવર </lblPrefDrive>
+      <lblVehicle>વાહન </lblVehicle>
+      <lblDistance>અનુમાનિત. અંતર </lblDistance>
+      <lblNotes>નોંધ </lblNotes>
+      <lblLoadging>લોજીંગ </lblLoadging>
+      <lblBoarding>બોર્ડિંગ </lblBoarding>
+      <lblPhone>ફોન ચાર્જસ </lblPhone>
+      <lblTraveling>મુસાફરી </lblTraveling>
+      <lblMisc>પરચુરણ ખર્ચો</lblMisc>
+      <lblTotal>ટોટલ રકમ </lblTotal>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblStatus1>સ્થિતિ </lblStatus1>
+    </route_master>
+  </route>
+
+  <daily_activity>
+    <daily_activity_newload>
+      <lblActNumber>પ્રવૃત્તિ સંખ્યા - લાઈન </lblActNumber>
+      <lblDatetime>તારીખ - સમય - દિવસ </lblDatetime>
+      <lblLType>લોડ પ્રકાર </lblLType>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblMeter>મીટર - વાચન </lblMeter>
+      <lbl>વાહન નં </lbl>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <Label1>બિલ નં</Label1>
+      <Label2>SR</Label2>
+      <lblLicExp>લાઈસન્સ - સમાપ્તિ તારીખ </lblLicExp>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblAdvDate>એડવાન્સ તારીખ </lblAdvDate>
+      <lblAdvanceTaken>એડવાન્સ</lblAdvanceTaken>
+      <lblAppExp>આશરે ખર્ચ </lblAppExp>
+      <lblAppExNotes>એડવાન્સ નોંધ </lblAppExNotes>
+      <lblExpDate>ખર્ચ તારીખ </lblExpDate>
+      <lblActualExpense>વાસ્તવિક ખર્ચ </lblActualExpense>
+      <lblExpenseAttach>એટેચમેન્ટ </lblExpenseAttach>
+      <lblExpNote>ખર્ચ નોંધ </lblExpNote>
+      <lblCollDate>કલેક્શન તારીખ </lblCollDate>
+      <lblExpense>વાસ્તવિક ખર્ચ</lblExpense>
+      <lblCashCNText>કેશ કલેક્શન </lblCashCNText>
+      <lblSubmitted>જમા </lblSubmitted>
+      <lblLoadValue>લોડ ભાવ - કલેક્શન </lblLoadValue>
+      <lblATakenText>એડવાન્સ</lblATakenText>
+      <lblCashCDText>કેશ કલેકટેડ </lblCashCDText>
+      <lblReceivableText>મળવાપાત્ર </lblReceivableText>
+      <lblPendingAmount>બાકી રકમ </lblPendingAmount>
+      <lb_unload>અનલોડ -  તફાવત </lb_unload>
+    </daily_activity_newload>
+
+    <daily_activity_reload>
+      <lblActNumber>પ્રવૃત્તિ સંખ્યા - લાઈન </lblActNumber>
+      <lblDatetime>તારીખ - સમય - દિવસ </lblDatetime>
+      <lblLType>લોડ પ્રકાર </lblLType>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblMeter>મીટર - વાચન </lblMeter>
+      <lbl>વાહન નં </lbl>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <Label1>બિલ નં</Label1>
+      <lblLine>રીલોડ લાઇન</lblLine>
+      <Label2>SR</Label2>
+      <lblLicExp>લાઈસન્સ - સમાપ્તિ તારીખ </lblLicExp>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblAdvDate>એડવાન્સ તારીખ </lblAdvDate>
+      <lblAdvanceTaken>એડવાન્સ</lblAdvanceTaken>
+      <lblAppExp>આશરે ખર્ચ </lblAppExp>
+      <lblAppExNotes>એડવાન્સ નોંધ </lblAppExNotes>
+      <lblExpDate>ખર્ચ તારીખ </lblExpDate>
+      <lblActualExpense>વાસ્તવિક ખર્ચ </lblActualExpense>
+      <lblExpenseAttach>એટેચમેન્ટ </lblExpenseAttach>
+      <lblExpNote>ખર્ચ નોંધ </lblExpNote>
+      <lblCollDate>કલેક્શન તારીખ </lblCollDate>
+      <lblAExpenseText>વાસ્તવિક ખર્ચ </lblAExpenseText>
+      <lblCashCNText>કેશ કલેક્શન </lblCashCNText>
+      <lblSubmitted>જમા </lblSubmitted>
+      <lblLoadValue>લોડ ભાવ - કલેક્શન </lblLoadValue>
+      <lblATakenText>એડવાન્સ</lblATakenText>
+      <lblCashCDText>કેશ કલેકટેડ </lblCashCDText>
+      <lblReceivableText>મળવાપાત્ર </lblReceivableText>
+      <lblPendingAmount>બાકી રકમ </lblPendingAmount>
+      <lb_unload>અનલોડ -  તફાવત </lb_unload>
+    </daily_activity_reload>
+
+    <daily_activity_unload>
+      <lblActNumber>પ્રવૃત્તિ સંખ્યા - લાઈન </lblActNumber>
+      <lblDatetime>તારીખ - સમય - દિવસ </lblDatetime>
+      <lblLType>લોડ પ્રકાર </lblLType>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblMeter>મીટર - વાચન </lblMeter>
+      <lbl>વાહન નં </lbl>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <Label1>બિલ નં</Label1>
+      <lblvehicle>વાહન</lblvehicle>
+      <Label2>SR</Label2>
+      <lblLicExp>લાઈસન્સ - સમાપ્તિ તારીખ </lblLicExp>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblAdvDate>એડવાન્સ તારીખ </lblAdvDate>
+      <lblAdvanceTaken>એડવાન્સ</lblAdvanceTaken>
+      <lblAppExp>આશરે ખર્ચ </lblAppExp>
+      <lblAppExNotes>એડવાન્સ નોંધ </lblAppExNotes>
+      <lblExpDate>ખર્ચ તારીખ </lblExpDate>
+      <lblActualExpense>વાસ્તવિક ખર્ચ </lblActualExpense>
+      <lblExpenseAttach>એટેચમેન્ટ </lblExpenseAttach>
+      <lblExpNote>ખર્ચ નોંધ </lblExpNote>
+      <lblCollDate>કલેક્શન તારીખ </lblCollDate>
+      <lblExpense>વાસ્તવિક ખર્ચ </lblExpense>
+      <lblCashCNText>કેશ કલેક્શન </lblCashCNText>
+      <lblSubmitted>જમા </lblSubmitted>
+      <lblLoadValue>લોડ ભાવ</lblLoadValue>
+      <lblAdvTaken>એડવાન્સ</lblAdvTaken>
+      <lblCashCDText>કેશ કલેકટેડ </lblCashCDText>
+      <lblReceivableText>મળવાપાત્ર </lblReceivableText>
+      <lblPendingAmount>બાકી રકમ </lblPendingAmount>
+      <lblUnloadValue>અનલોડ વેલ્યુ</lblUnloadValue>
+    </daily_activity_unload>
+
+    <daily_activity_adjustments>
+      <Label1>વાહન નં.</Label1>
+      <lblNo>પ્રવૃત્તિ સંખ્યા - લાઈન</lblNo>
+      <lblDatetime>તારીખ - સમય - દિવસ</lblDatetime>
+      <lblwarehouse>વખાર</lblwarehouse>
+      <Label2>વેચાણ વ્યક્તિ</Label2>
+      <lblDriver>ડ્રાઈવર</lblDriver>
+    </daily_activity_adjustments>
+  </daily_activity>
+
+  <order>
+    <order_master>
+      <lblOrderType>ઓર્ડર પ્રકાર </lblOrderType>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblBillTo>બિલ મોકલો </lblBillTo>
+      <lblShipTo>મોકલો </lblShipTo>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <lblCForm>સી ફોર્મ </lblCForm>
+      <lblDocumentNumber>ઓર્ડર નં - તારીખ </lblDocumentNumber>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblVehicle>વાહન નં </lblVehicle>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblRequiredDate>આવશ્યક તારીખ </lblRequiredDate>
+      <lblScheduleType>શેડ્યૂલ પ્રકાર </lblScheduleType>
+      <lblNotes>નોંધ </lblNotes>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblMaterialCost>સામગ્રી કિંમત </lblMaterialCost>
+      <lblFreight>ફ્રેઇટ </lblFreight>
+      <lblOtherAmount>અન્ય રકમ </lblOtherAmount>
+      <lblSubTotal>સબ ટોટલ </lblSubTotal>
+      <lblPaidAmt>ચૂકવેલ રકમ </lblPaidAmt>
+      <lblUnpaidAmt>બાકી રકમ </lblUnpaidAmt>
+      <lblDiscount>ડિસ્કાઉન્ટ </lblDiscount>
+      <lblTax>ટેક્સ </lblTax>
+      <lblRounding>રાઉન્ડિંગ </lblRounding>
+      <lblPaymentMode>ચુકવણી પ્રકાર </lblPaymentMode>
+      <lblPymtTerms>ચુકવણી શરતો </lblPymtTerms>
+      <lblDueDate>બાકી તારીખ </lblDueDate>
+      <lblInventoryEff>સ્ટોકની અસર</lblInventoryEff>
+    </order_master>
+
+    <sales_order_retail>
+      <lblOrderType>ઓર્ડર પ્રકાર </lblOrderType>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblBillTo>બિલ મોકલો </lblBillTo>
+      <lblShipTo>મોકલો </lblShipTo>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <lblCForm>સી ફોર્મ </lblCForm>
+      <lblDocumentNumber>ઓર્ડર નં - તારીખ </lblDocumentNumber>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblVehicle>વાહન નં </lblVehicle>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblRequiredDate>આવશ્યક તારીખ </lblRequiredDate>
+      <lblScheduleType>શેડ્યૂલ પ્રકાર </lblScheduleType>
+      <lblNotes>નોંધ </lblNotes>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblMaterialCost>સામગ્રી કિંમત </lblMaterialCost>
+      <lblFreight>ફ્રેઇટ </lblFreight>
+      <lblOtherAmount>અન્ય રકમ </lblOtherAmount>
+      <lblSubTotal>સબ ટોટલ</lblSubTotal>
+      <lblPaidAmt>ચૂકવેલ રકમ </lblPaidAmt>
+      <lblUnpaidAmt>બાકી રકમ </lblUnpaidAmt>
+      <lblDiscount>ડિસ્કાઉન્ટ </lblDiscount>
+      <lblTax>ટેક્સ </lblTax>
+      <lblRounding>રાઉન્ડિંગ </lblRounding>
+      <lblPaymentMode>ચુકવણી પ્રકાર </lblPaymentMode>
+      <lblPymtTerms>ચુકવણી શરતો </lblPymtTerms>
+      <lblDueDate>બાકી તારીખ </lblDueDate>
+    </sales_order_retail>
+
+    <special_instruction>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblScheduledDateDay>શેડ્યૂલ તારીખ - દિવસ </lblScheduledDateDay>
+      <lblRequiredDateDay>આવશ્યક તારીખ - દિવસ </lblRequiredDateDay>
+      <lblInstructionNo>સૂચના નં-તારીખ </lblInstructionNo>
+      <lblShipTo>મોકલો </lblShipTo>
+      <lblScheduleType>શેડ્યૂલ પ્રકાર </lblScheduleType>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblNotes>નોંધ </lblNotes>
+    </special_instruction>
+
+    <purchase_order>
+      <lblOrderType>ઓર્ડર પ્રકાર </lblOrderType>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblBillTo>બિલ મોકલો </lblBillTo>
+      <lblShipTo>મોકલો </lblShipTo>
+      <lblRoute>રૂટ </lblRoute>
+      <lblSales>વેચાણ વ્યક્તિ </lblSales>
+      <lblDriver>ડ્રાઈવર </lblDriver>
+      <lblCForm>સી ફોર્મ </lblCForm>
+      <lblSeries>ઇનવોઇસ પ્રકાર</lblSeries>
+      <lblDocumentNumber>ઓર્ડર નં - તારીખ </lblDocumentNumber>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblReceived>પ્રાપ્ત</lblReceived>
+      <lblVehicle>વાહન નં </lblVehicle>
+      <lblVehCap>વાહન ક્ષમતા </lblVehCap>
+      <lblUtiCap>વપરાશમાં ક્ષમતા </lblUtiCap>
+      <lblAvaCap>ઉપલબ્ધ ક્ષમતા </lblAvaCap>
+      <lblRequiredDate>આવશ્યક તારીખ </lblRequiredDate>
+      <lblScheduleType>શેડ્યૂલ પ્રકાર </lblScheduleType>
+      <lblNotes>નોંધ </lblNotes>
+      <lblwarehouse>વખાર </lblwarehouse>
+      <lblMaterialCost>સામગ્રી કિંમત </lblMaterialCost>
+      <lblFreight>ફ્રેઇટ </lblFreight>
+      <lblOtherAmount>અન્ય રકમ </lblOtherAmount>
+      <lblSubTotal>સબ ટોટલ </lblSubTotal>
+      <lblPaidAmt>ચૂકવેલ રકમ </lblPaidAmt>
+      <lblUnpaidAmt>બાકી રકમ </lblUnpaidAmt>
+      <lblDiscount>ડિસ્કાઉન્ટ </lblDiscount>
+      <lblTax>ટેક્સ </lblTax>
+      <lblRounding>રાઉન્ડિંગ </lblRounding>
+      <lblPaymentMode>ચુકવણી પ્રકાર </lblPaymentMode>
+      <lblPymtTerms>ચુકવણી શરતો </lblPymtTerms>
+      <lblDueDate>બાકી તારીખ </lblDueDate>
+    </purchase_order>
+
+    <sales_bill>
+      <lblCustomer>ગ્રાહક</lblCustomer>
+      <lblGift>ગિફ્ટ</lblGift>
+      <lblDocumentNumber>ઓર્ડર નં - તારીખ</lblDocumentNumber>
+      <lblStatus>સ્થિતિ</lblStatus>
+      <lblPaidAmount>ચૂકવેલ રકમ</lblPaidAmount>
+      <lblNotes>નોંધ</lblNotes>
+      <lblwarehouse>વખાર</lblwarehouse>
+      <lblCustName>નામ</lblCustName>
+    </sales_bill>
+  </order>
+
+  <invoice>
+
+    <invoice_master_tax>
+      <lblCFormNo>સી ફોર્મ નં </lblCFormNo>
+      <lblOrdeNo>ઓર્ડર નં </lblOrdeNo>
+    </invoice_master_tax>
+
+    <invoice_mater_retail>
+      <lblOrdeNo>ઓર્ડર નં </lblOrdeNo>
+    </invoice_mater_retail>
+
+    <purchase_invoice>
+      <lblCFormNo>સી ફોર્મ નં </lblCFormNo>
+      <lblOrdeNo>ઓર્ડર નં </lblOrdeNo>
+    </purchase_invoice>
+
+
+    <payment>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblPaymentDate>ચુકવણી  નં -  તારીખ </lblPaymentDate>
+      <lblNotes>નોંધ </lblNotes>
+    </payment>
+  </invoice>
+
+  <inventory>
+    <inventory_update>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblWharehouseType>વખાર  પ્રકાર </lblWharehouseType>
+      <lblWarehouse>વખાર </lblWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblLastCountedDate>છેલ્લે ગણેલી તારીખ </lblLastCountedDate>
+      <lblNotes>નોંધ </lblNotes>
+    </inventory_update>
+
+    <inventory_transfer>
+      <lblTransferType>ટ્રાન્સફર પ્રકાર </lblTransferType>
+      <lblFromWarehouse>વખારમાંથી </lblFromWarehouse>
+      <lblToWarehouse>વખારમાં </lblToWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblReturnReason>ટ્રાન્સફર કારણ </lblReturnReason>
+      <lblNotes>નોંધ </lblNotes>
+    </inventory_transfer>
+
+    <inventory_return>
+      <lblTransferType>ટ્રાન્સફર પ્રકાર </lblTransferType>
+      <lblFromWarehouse>વખારમાંથી </lblFromWarehouse>
+      <lblToWarehouse>વખારમાં </lblToWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblReturnReason>ટ્રાન્સફર કારણ </lblReturnReason>
+      <lblNotes>નોંધ </lblNotes>
+    </inventory_return>
+
+    <salesreturn_tax>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblWharehouseType>વખાર  પ્રકાર </lblWharehouseType>
+      <lblWarehouse>વખાર </lblWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblLastCountedDate>છેલ્લે ગણેલી તારીખ </lblLastCountedDate>
+      <lblNotes>નોંધ </lblNotes>
+    </salesreturn_tax>
+
+    <purchase_return>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblWharehouseType>વખાર  પ્રકાર </lblWharehouseType>
+      <lblWarehouse>વખાર </lblWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblLastCountedDate>છેલ્લે ગણેલી તારીખ </lblLastCountedDate>
+      <lblNotes>નોંધ </lblNotes>
+    </purchase_return>
+
+    <salesreturn_retail>
+      <lblCustomer>ગ્રાહક </lblCustomer>
+      <lblWharehouseType>વખાર  પ્રકાર </lblWharehouseType>
+      <lblWarehouse>વખાર </lblWarehouse>
+      <lblDocumentNumber>ડૉક. નં - તારીખ </lblDocumentNumber>
+      <lblLastCountedDate>છેલ્લે ગણેલી તારીખ </lblLastCountedDate>
+      <lblNotes>નોંધ </lblNotes>
+    </salesreturn_retail>
+  </inventory>
+
+ <fleet>
+    <vehicle_master>
+      <lblVID>વાહન નં. </lblVID>
+      <lblActive>સક્રિય </lblActive>
+      <lblVehicleType>વાહન પ્રકાર - વ્હીલ પ્રકાર </lblVehicleType>
+      <lblFuelType>ફ્યુઅલ પ્રકાર - સરેરાશ </lblFuelType>
+      <lblLength>સાઈઝ </lblLength>
+      <lblNotes>નોંધ </lblNotes>
+      <lblModel>મોડેલનું વર્ષ -પેઇન્ટ તારીખ</lblModel>
+      <lblAttachment>એટેચમેન્ટ </lblAttachment>
+      <lblUpload>ફાઇલ અપલોડ </lblUpload>
+      <lblAtchReminderDate>રીમાઇન્ડર તારીખ </lblAtchReminderDate>
+      <lblAtchNotes>નોંધ </lblAtchNotes>
+    </vehicle_master>
+
+    <checkpoint_mapping>
+      <lblVehicleType>વાહન પ્રકાર </lblVehicleType>
+      <lblFuelType>ફ્યુઅલ પ્રકાર </lblFuelType>
+      <lblMainType>જાળવણી પ્રકાર </lblMainType>
+    </checkpoint_mapping>
+
+    <fuel_management>
+      <lblVehicleNumber>વાહન નં </lblVehicleNumber>
+      <lblFuelType>ફ્યુઅલ પ્રકાર </lblFuelType>
+      <lblAverage>સરેરાશ </lblAverage>
+      <lblDriverName>ડ્રાઈવર નામ </lblDriverName>
+      <lblFuelStation>ફ્યુઅલ સ્ટેશન - સ્થાન </lblFuelStation>
+      <lblPrevRead>ગત મીટર રીડીંગ </lblPrevRead>
+      <lblCurrMiledge>વર્તમાન માઇલેજ </lblCurrMiledge>
+      <lblDate>તારીખ </lblDate>
+      <lblTime>સમય </lblTime>
+      <lblQuanity>માત્રા </lblQuanity>
+      <lblUnitPrice>યુનિટ કિંમત </lblUnitPrice>
+      <lblPayment>ચુકવણી </lblPayment>
+      <lblCurrRead>વર્તમાન મીટર રીડીંગ </lblCurrRead>
+      <lblNotes>નોંધ </lblNotes>
+    </fuel_management>
+
+    <schedule_maintenance>
+      <lblVehicleNumber>વાહન નં. </lblVehicleNumber>
+      <lblMainType>જાળવણી પ્રકાર </lblMainType>
+      <lblSchMain>શેડ્યૂલ જાળવણી. </lblSchMain>
+      <lblMainBy>જાળવણી. દ્વારા </lblMainBy>
+      <lblContract>કોન્ટ્રાક્ટ </lblContract>
+      <lblType>પ્રકાર </lblType>
+      <lblMainMode>જાળવણી સ્થિતિ </lblMainMode>
+      <lblActualMntnc>વાસ્તવિક જાળવણી. </lblActualMntnc>
+      <lblAmtPaid>ચૂકવેલ રકમ </lblAmtPaid>
+      <lblNotes>નોંધ </lblNotes>
+      <lblAttachment>એટેચમેન્ટ </lblAttachment>
+      <lblUpload>ફાઇલ અપલોડ </lblUpload>
+      <lblAtchReminderDate>રીમાઇન્ડર તારીખ </lblAtchReminderDate>
+      <lblAtchNotes>નોંધ </lblAtchNotes>
+    </schedule_maintenance>
+
+    <service_contract>
+      <lblVehicleNumber>વાહન નં. </lblVehicleNumber>
+      <lblContractNumber>કોન્ટ્રાક્ટ  નં. </lblContractNumber>
+      <lblCompanyName>કંપની નામ </lblCompanyName>
+      <lblContactNumber>સંપર્ક નં. </lblContactNumber>
+      <lblStartDate>પ્રારંભ તારીખ </lblStartDate>
+      <lblAgent>એજન્ટ </lblAgent>
+      <lblType>પ્રકાર </lblType>
+      <lblBaseContractNumber>બેઝ કોન્ટ્રાક્ટ નં. </lblBaseContractNumber>
+      <lblAddress>સરનામું </lblAddress>
+      <lblEndDate>સમાપ્તિ તારીખ </lblEndDate>
+      <lblAmount>રકમ </lblAmount>
+      <lblNotes>નોંધ </lblNotes>
+    </service_contract>
+
+    <vehicle_enrollment>
+      <lblVehicleNumber>વાહન નં </lblVehicleNumber>
+      <lblMainType>જાળવણી પ્રકાર </lblMainType>
+      <lblSchDate>શેડ્યૂલ તારીખ </lblSchDate>
+      <lblMainDis>જાળવણી અંતર </lblMainDis>
+      <lblContract>કોન્ટ્રાક્ટ </lblContract>
+      <lblType>પ્રકાર </lblType>
+      <lblMainMode>જાળવણી પ્રકાર </lblMainMode>
+      <lblScheduleTime>શેડ્યૂલ સમય </lblScheduleTime>
+      <lblMainDate>જાળવણી  (સમય) </lblMainDate>
+      <chkActive>સક્રિય </chkActive>
+      <lblNotes>નોંધ </lblNotes>
+    </vehicle_enrollment>
+
+    <breakdown_mntnc>
+      <lblVehicleNumber>વાહન નં.</lblVehicleNumber>
+      <lblType>પ્રકાર </lblType>
+      <lblBPolicy>પોલિસી નં. </lblBPolicy>
+      <lblBBreakdownDate>બ્રેકડાઉન તારીખ - સમય </lblBBreakdownDate>
+      <lblBDriver>ડ્રાઈવર નામ </lblBDriver>
+      <lblBReason>કારણ </lblBReason>
+      <lblBClaimDate>ક્લેઇમ તારીખ </lblBClaimDate>
+      <lblBMainBy>જાળવણી દ્વારા </lblBMainBy>
+      <lblBMainDate>જાળવણી તારીખ </lblBMainDate>
+      <lblBAmount>ચૂકવેલ રકમ </lblBAmount>
+      <lblBNotes>નોંધ </lblBNotes>
+      <lblBAttachment>એટેચમેન્ટ નામ </lblBAttachment>
+      <lblBUpload>ફાઇલ અપલોડ </lblBUpload>
+      <lblBAtchReminderDate>રીમાઇન્ડર તારીખ </lblBAtchReminderDate>
+      <lblBAtchNotes>નોંધ </lblBAtchNotes>
+      <lblCPolicy>પોલિસી નં. </lblCPolicy>
+      <lblCRegiDate>ક્લેઇમ નોંધણી તારીખ - સમય </lblCRegiDate>
+      <lblCRegRefNum>રજીસ્ટ્રેશન રેફરન્સ નં. </lblCRegRefNum>
+      <lblCStatus>સ્થિતિ </lblCStatus>
+      <lblCDocDate>દસ્તાવેજ સબમિશન  તારીખ - નં </lblCDocDate>
+      <lblCExpTime>અપેક્ષિત પ્રક્રિયા સમય </lblCExpTime>
+      <lblCInsName>ઇન્સ્પેક્ટર નામ </lblCInsName>
+      <lblCContactNum>સંપર્ક નં. </lblCContactNum>
+      <lblCClaimDate>ક્લેઇમ પાસ તારીખ </lblCClaimDate>
+      <lblCClaimAmount>ક્લેઇમ  રકમ </lblCClaimAmount>
+      <lblCPassAmount>પાસ રકમ </lblCPassAmount>
+      <lblCNotes>નોંધ </lblCNotes>
+      <lblCAttachment>એટેચમેન્ટ નામ </lblCAttachment>
+      <lblCUpload>ફાઇલ અપલોડ </lblCUpload>
+      <lblCAtchReminderDate>રીમાઇન્ડર તારીખ </lblCAtchReminderDate>
+      <lblCAtchNotes>નોંધ </lblCAtchNotes>
+      <lblIDocStatus>દસ્તાવેજ સ્થિતિ </lblIDocStatus>
+      <lblINewDocNum>નવો દસ્તાવેજ નં. </lblINewDocNum>
+      <lblIBaseDocNum>બેઝ દસ્તાવેજ નં. </lblIBaseDocNum>
+      <lblICompName>કંપની નામ </lblICompName>
+      <lblIAddress>સરનામું </lblIAddress>
+      <lblIContact>સંપર્ક નં. </lblIContact>
+      <lblISDate>પ્રારંભ તારીખ </lblISDate>
+      <lblIEDate>સમાપ્તિ તારીખ </lblIEDate>
+      <lblIAgent>એજન્ટ </lblIAgent>
+      <lblIAmount>રકમ </lblIAmount>
+      <lblINotes>નોંધ </lblINotes>
+      <lblIAttachment>એટેચમેન્ટ નામ </lblIAttachment>
+      <lblIUpload>ફાઇલ અપલોડ</lblIUpload>
+      <lblIAtchReminderDate>રીમાઇન્ડર તારીખ </lblIAtchReminderDate>
+      <lblIAtchNotes>નોંધ </lblIAtchNotes>
+    </breakdown_mntnc>
+  </fleet>
+
+  <finance>
+    <chart_of_account>
+      <lblGLCode>GL કોડ </lblGLCode>
+      <lblGLName>GL નામ </lblGLName>
+      <lblGLSubType>GL પ્રકાર </lblGLSubType>
+      <lblGLSubType>GL સબ પ્રકાર </lblGLSubType>
+      <lblGLGroupName>GL ગ્રુપ </lblGLGroupName>
+      <lblParentGL>પેરેન્ટ GL</lblParentGL>
+      <lblCreditDays>ક્રેડિટ દિવસો </lblCreditDays>
+      <lblGLAmount>GL રકમ </lblGLAmount>
+      <lblIsActive>સક્રિય </lblIsActive>
+      <lblACName>A/C નામ</lblACName>
+      <lblGLAccCode>GL A/C</lblGLAccCode>
+      <lblNotes>નોંધ </lblNotes>
+    </chart_of_account>
+
+    <collected_cheques>
+      <lblBankAcc>બેન્ક એકાઉન્ટ</lblBankAcc>
+      <lblStatus>સ્થિતિ</lblStatus>
+    </collected_cheques>
+
+    <tax_master>
+      <lblTCode>નામ </lblTCode>
+      <lblDesc>વર્ણન </lblDesc>
+      <lblActive>સક્રિય </lblActive>
+      <lblPercent>ટકા </lblPercent>
+      <lblFormula>ગણતરી સૂત્ર </lblFormula>
+      <lblType>પ્રકાર </lblType>
+    </tax_master>
+
+    <credit_note>
+      <lblCNNO>ક્રેડિટ નોટ નં. </lblCNNO>
+      <lblCNDate>ક્રેડિટ નોટ તારીખ </lblCNDate>
+      <lblCustomerCode>ગ્રાહક </lblCustomerCode>
+      <lblCNType>ક્રેડિટ નોટ પ્રકાર </lblCNType>
+      <lblAmount>રકમ </lblAmount>
+      <lblValidTill>સુધી માન્ય </lblValidTill>
+      <lblTC>શરતો અને નિયમો </lblTC>
+      <lblStatus>સ્થિતિ </lblStatus>
+      <lblNotes>નોંધ</lblNotes>
+    </credit_note>
+
+    <tax_mapping>
+      <lblPlant>પ્લાન્ટ </lblPlant>
+      <lblItemGroup>વસ્તુ ગ્રુપ </lblItemGroup>
+      <lblActive>સક્રિય </lblActive>
+      <lblState>રાજ્ય </lblState>
+      <lblTax>ટેક્સ </lblTax>
+    </tax_mapping>
+
+    <journal_entry>
+      <lblJENo>JE પ્રકાર </lblJENo>
+      <lblNotes>તારીખ </lblNotes>
+    </journal_entry>
+  </finance>
+
+  <marketing>
+    <campaign_master>
+      <lblCampaignName>નામ </lblCampaignName>
+      <lblSDate>પ્રારંભ તારીખ </lblSDate>
+      <lblTppl>લક્ષ્યાંકિત લોકો </lblTppl>
+      <lblActive>સક્રિય </lblActive>
+      <lblEDate>સમાપ્તિ તારીખ </lblEDate>
+      <lblType>પ્રકાર </lblType>
+      <lblDesc>વર્ણન </lblDesc>
+    </campaign_master>
+
+    <campaign_survey>
+      <lblCampaign>પ્રચાર </lblCampaign>
+      <lblCompanyName>કંપની નામ </lblCompanyName>
+      <lblIndustry>ઉદ્યોગ </lblIndustry>
+      <lblWebsite>વેબસાઈટ </lblWebsite>
+      <lblContactName>સંપર્ક નામ </lblContactName>
+      <lblPhoneNumber>ફોન નંબર </lblPhoneNumber>
+      <lblEmailAddress>ઇ-મેલ </lblEmailAddress>
+      <lblFollowUpDate>અનુવર્તી  તારીખ </lblFollowUpDate>
+      <lblNewLetterSubscription>ન્યૂઝલેટર માટે  સબ્સ્ક્રિપ્શન </lblNewLetterSubscription>
+      <lblNotes>નોંધ </lblNotes>
+    </campaign_survey>
+
+    <client_feedback>
+      <lblFeedbackFrom>ફીડબૅક પાસેથી </lblFeedbackFrom>
+      <lblName>નામ </lblName>
+      <lblIndustry>ઉદ્યોગ </lblIndustry>
+      <lblWebsite>વેબસાઈટ </lblWebsite>
+      <Label2>વેચાણ પ્રતિનિધિ</Label2>
+      <lblContactName>સંપર્ક નામ </lblContactName>
+      <lblPhoneNumber>ફોન નંબર </lblPhoneNumber>
+      <lblEmailAddress>ઇ-મેલ </lblEmailAddress>
+      <lblFeedBackType>ફીડબૅક  પ્રકાર </lblFeedBackType>
+      <lblNotes>નોંધ </lblNotes>
+    </client_feedback>
+
+    <message_broadcast>
+      <lblMessageCode>મેસેજ કોડ </lblMessageCode>
+      <lblSubject>વિષય </lblSubject>
+      <lblMessageDate>મેસેજ તારીખ - સમય </lblMessageDate>
+      <lblApplicableFor>લાગુ પડે </lblApplicableFor>
+      <lblMessageBody>મેસેજ </lblMessageBody>
+    </message_broadcast>
+
+    <message_inbox>
+      <lblSubject>વિષય </lblSubject>
+      <lblDate>તારીખ </lblDate>
+      <lblTime>સમય </lblTime>
+      <lblMessageBody>મેસેજ </lblMessageBody>
+    </message_inbox>
+  </marketing>
+
+  <myaccount>
+    <change_password>
+      <lblOldPassword>જૂનો પાસવર્ડ </lblOldPassword>
+      <lblNewPassword>નવો પાસવર્ડ </lblNewPassword>
+      <lblConfirmPassword>ખાતરી પાસવર્ડ </lblConfirmPassword>
+    </change_password>
+
+    <authorization>
+      <lblEmpGroup>કર્મચારી ગ્રુપ </lblEmpGroup>
+      <lblIsActive>સક્રિય </lblIsActive>
+    </authorization>
+
+    <email_settings>
+      <lblEmailID>ઇ-મેલ </lblEmailID>
+      <lblPassword>પાસવર્ડ </lblPassword>
+      <lblDomain>ડોમેન </lblDomain>
+      <lblPort>પોર્ટ </lblPort>
+    </email_settings>
+  </myaccount>
+
+  <reports>
+    <lblStatus>સ્થિતિ</lblStatus>
+    <lbldoctype>દસ્તાવેજ પ્રકાર</lbldoctype>
+    <lblFromDate>તારીખ થી</lblFromDate>
+    <lblToDate>તારીખ સુધી</lblToDate>
+    <lblActivityDate>તારીખ</lblActivityDate>
+    <lblVehicle>વાહન</lblVehicle>
+    <lblWarehouse>વખાર</lblWarehouse>
+    <lblReason>કારણ</lblReason>
+    <lblCustomer>ગ્રાહક</lblCustomer>
+    <lblSalesPerson>વેચાણ વ્યક્તિ</lblSalesPerson>
+    <lblValDate>માન્ય તારીખ</lblValDate>
+    <lblSaleType>વેચાણ પ્રકાર</lblSaleType>
+    <lblMaterial>સામગ્રી</lblMaterial>
+    <lblCancel>કેન્સલ</lblCancel>
+    <lblCustomerName>ગ્રાહક</lblCustomerName>
+  </reports>
+
+  <common>
+    <aboutus>
+      <lblMaster>માસ્ટરમાં તમે તમારા રિટેલરો, કર્મચારીઓ, વેરહાઉસ વગેરે ની વિગતો અપડેટ કરી શકો છો.</lblMaster>
+      <lblInventory>ઈન્વેન્ટરી તમને તમારા સ્ટોક ની વિગતો આપશે. સ્ટોકમાં સુધારો, ટ્રાન્સફર વગેરે ની વિગતો અહીંથી અપડેટ કરી શકો છો.</lblInventory>
+      <lblRoute>રૂટ મોડ્યુલ માં, તમે તમારા રૂટની વિગતો અપડેટ કરી શકો છો. તેમાં વેચાણ વ્યક્તિ / ડ્રાઈવર, વાહન અને ચોક્કસ માર્ગ પર રિટેલરો નું શેડ્યૂલ નક્કી કરી શકો છો.</lblRoute>
+      <lblFleet>ફ્લીટ મેનેજમેન્ટમાં તમે તમારા વાહન સંબંધિત માહિતી અપડેટ કરી શકો છો. વાહનો નો બળતણ ખર્ચ પણ અપડેટ કરી શકો છો.</lblFleet>
+      <lblDailyactivity>દૈનિક પ્રવૃત્તિ તમને તમારી રોજ ની એન્ટ્રી કરવા દેશે. તમારી રોજિંદી લોડ,રીલોડ અને અનલોડની વિગતો અહીંથી અપડેટ કરી શકો છો.</lblDailyactivity>
+      <lblFinance>ફાયનાન્સ તમને તમે તમારા બધા એકાઉન્ટ્સ અને તમારા કર્મચારી ની માહિતી બતાવશે. તેમાં એકત્ર ચેકો, ક્રેડિટ નોંધ અને GL એકાઉન્ટ્સની પણ માહિતી છે.</lblFinance>
+      <lblOrder>ઓર્ડર તમને તમારો પરચેઝ ઓર્ડર મૂકવામાં મદદ છે.તમે સેલ્સ ઓર્ડર ની માહિતી પણ અપડેટ કરી શકો છો. ગોડાઉન વેચાણની વિગતો પણ અહીં દાખલ કરી શકાય છે.</lblOrder>
+      <lblMarketing>માર્કેટિંગ તમને તમારા પ્રોડક્ટ્સ અને સર્વિસ ના અભિયાન ની માહિતી અહીંથી અપડેટ કરવા દેશે.તે ગ્રાહકો દ્વારા આપવામાં આવેલ સર્વેક્ષણો ની વિગતો પણ દર્શાવે છે.</lblMarketing>
+      <lblInvoice>ઇનવોઇસ તમને તમારા ઇનવોઇસ ની યાદી દર્શાવે છે. તમે તે ઇન્વૉઇસેસ સંબંધિત ચુકવણી ની વિગતો અહીંથી અપડેટ કરી શકો છો.</lblInvoice>
+      <lblReports>અહેવાલો અને ઍનલિટિક્સ મોડ્યુલ, તમને તમામ પ્રકારના અહેવાલો આપશે. તે તમને સ્ટોકના,એકાઉન્ટના તથા તમામ મોડ્યુલ સંબંધિત અહેવાલો બતાવશે.</lblReports>
+    </aboutus>
+  </common>
+
+</gujarati>

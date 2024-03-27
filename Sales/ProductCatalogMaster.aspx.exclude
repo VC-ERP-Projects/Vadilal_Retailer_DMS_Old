@@ -1,0 +1,666 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/OutletMaster.master" AutoEventWireup="true" CodeFile="ProductCatalogMaster.aspx.cs" Inherits="Marketing_Scheme" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+    <link href="https://cdn.datatables.net/scroller/2.0.7/css/scroller.dataTables.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        var IpAddress;
+        $(function () {
+            Relaod();
+            $("#hdnIPAdd").val(IpAddress);
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler2);
+        });
+
+
+
+        function getUserIP(onNewIP) { //  onNewIp - your listener function for new IPs
+            //compatibility for firefox and chrome
+            var myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+            var pc = new myPeerConnection({
+                iceServers: []
+            }),
+                noop = function () { },
+                localIPs = {},
+                ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g,
+                key;
+
+            function iterateIP(ip) {
+                if (!localIPs[ip]) onNewIP(ip);
+                localIPs[ip] = true;
+            }
+
+            //create a bogus data channel
+            pc.createDataChannel("");
+
+            // create offer and set local description
+            pc.createOffer(function (sdp) {
+                sdp.sdp.split('\n').forEach(function (line) {
+                    if (line.indexOf('candidate') < 0) return;
+                    line.match(ipRegex).forEach(iterateIP);
+                });
+
+                pc.setLocalDescription(sdp, noop, noop);
+            }, noop);
+
+            //listen for candidate events
+            pc.onicecandidate = function (ice) {
+                if (!ice || !ice.candidate || !ice.candidate.candidate || !ice.candidate.candidate.match(ipRegex)) return;
+                ice.candidate.candidate.match(ipRegex).forEach(iterateIP);
+            };
+        }
+        // Usage
+        getUserIP(function (ip) {
+            if (IpAddress == undefined)
+                IpAddress = ip;
+            try {
+                if ($("#hdnIPAdd").val() == 0 || $("#hdnIPAdd").val() == "" || $("#hdnIPAdd").val() == undefined) {
+                    $("#hdnIPAdd").val(ip);
+                }
+            }
+            catch (err) {
+
+            }
+        });
+        function download() {
+            window.open("../Document/CSV Formats/SchemeDealerDistriUpload.csv");
+        }
+
+        function downloadItem() {
+            window.open("../Document/CSV Formats/SchemeItemUpload.csv");
+        }
+
+        function downloadMapping() {
+            window.open("../Document/CSV Formats/SchemeMappingUpload.csv");
+        }
+
+        function autoCompleteMatGroup_OnClientPopulating(sender, args) {
+            var key = $('.txtGroup').val().split('-')[0];
+            sender.set_contextKey(key);
+        }
+
+        function autoCompleteMatName_OnClientPopulating(sender, args) {
+            var key = $('.txtSubGroup').val().split('-')[0];
+            sender.set_contextKey(key);
+        }
+
+        function autoCompleteDistriCode_OnClientPopulating(sender, args) {
+            var reg = $('.txtRegion').val().split('-')[0];
+
+            var plt = $('.txtPlant').val().split('-')[0];
+
+            sender.set_contextKey(reg + "-" + plt);
+        }
+
+        function autoCompletePlant_OnClientPopulating(sender, args) {
+            var key = $('.txtRegion').val().split('-')[0];
+            sender.set_contextKey(key);
+        }
+
+
+        function autoCompleteDealerCode_OnClientPopulating(sender, args) {
+
+            if ($('.txtDistributor').val() != undefined) {
+                var key = $('.txtDistributor').val().split('-')[2];
+                if (key != undefined)
+                    sender.set_contextKey(key);
+            }
+        }
+
+        function EndRequestHandler2(sender, args) {
+            Relaod();
+        }
+
+        function _btnCheck() {
+            if (!$('._masterForm').data('bootstrapValidator').isValid())
+                $('._masterForm').bootstrapValidator('validate');
+
+            return $('._masterForm').data('bootstrapValidator').isValid();
+        }
+
+        function _btnCheckActive() {
+            if ($('.hdnIsActive').val() == "0") {
+                if (confirm('QPS Scheme is In-Active, Do you want to Copy ?')) {
+                    $('.hdnCopyActive').val('1');
+                    return true;
+                }
+                else {
+                    $('.hdnCopyActive').val('0');
+                    return true;
+                }
+            }
+            else
+                $('.hdnCopyActive').val('1');
+        }
+
+        function btnCheckItem() {
+            if ($('.txtGroup').val() == "" && $('.txtSubGroup').val() == "" && $('.txtMatName').val() == "") {
+                if (!$('._materialForm').data('bootstrapValidator').isValid())
+                    $('._materialForm').bootstrapValidator('validate');
+
+                return $('._materialForm').data('bootstrapValidator').isValid();
+            } else {
+                return true;
+            }
+
+        }
+
+        function _btnPanelCheck() {
+
+            if (!$('._panelForm').data('bootstrapValidator').isValid())
+                $('._panelForm').bootstrapValidator('validate');
+
+            return $('._panelForm').data('bootstrapValidator').isValid();
+        }
+
+        function Relaod() {
+
+            $('._materialForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                }
+            });
+            $('#tabs a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+
+            $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+                $.cookie("Scheme", $(e.target).attr("href").substr(1));
+            });
+            $('#tabs a[href="#' + $.cookie("Scheme") + '"]').tab('show');
+
+            ModeType();
+
+            var txtId = 'body_txtItemName';
+            var col1 = txtId.replace("txtItemName", '');
+            $('#' + 'body_txtItemName').autocomplete({
+                source: function (request, response) {
+                    var DivisionId = $(".ddlDivision").val();
+                    $.ajax({
+                        type: "POST",
+                        url: 'ProductCatalogMaster.aspx/GetItem',
+                        dataType: "json",
+                        data: "{ 'prefixText': '" + (request.term != '' ? request.term : '*') + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data.d, function (item) {
+                                return {
+                                    label: item.Text,
+                                    value: item.Text,
+                                    id: item.Value
+                                };
+                            }))
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        }
+                    });
+                },
+
+                select: function (event, ui) {
+                    $('#txtItemName').val(ui.item.value + " ");
+
+                    $('#hdnItemCode').val(ui.item.value.split("-")[0].trim());
+                    $('#txtMRP').val("");
+                    $('#txtCategory').val("");
+                },
+                change: function (event, ui) {
+                    if (!ui.item) {
+
+                    }
+                },
+                minLength: 1
+            });
+
+            $(document).on('keyup', '.txtItemName', function () {
+                var textValue = $(this).val();
+                var currentRow = $(this).closest("tr");
+                // var col1 = currentRow.find("td:eq(0)").text();
+
+
+            });
+
+            $('.txtItemName').on('autocompleteselect', function (e, ui) {
+                var txtId = $(this).attr("id");
+                var col1 = txtId.replace("txtItemName", '');
+                $('#txtItemName' + col1).val(ui.item.value);
+                GetItemDetailsByCode(ui.item.value, col1);
+            });
+
+            $(document).ready(function () {
+                var today = new Date();
+                var fromDateInput = $('.datepicker');
+                var toDateInput = $('.datepicker1');
+
+                fromDateInput.datepicker({
+                    autoclose: true,
+                    minDate: today,
+                    dateFormat: 'dd/mm/yy',
+                    onSelect: function (selectedDate) {
+                        var fromDate = $(this).datepicker('getDate');
+                        toDateInput.datepicker('option', 'minDate', fromDate);
+                    }
+                });
+
+                toDateInput.datepicker({
+                    autoclose: true,
+                    minDate: today,
+                    dateFormat: 'dd/mm/yy',
+                    onSelect: function (selectedDate) {
+                        var toDate = $(this).datepicker('getDate');
+                        fromDateInput.datepicker('option', 'maxDate', toDate);
+                    }
+                });
+
+                fromDateInput.click(function () {
+                    $(this).datepicker('show');
+                });
+                fromDateInput.change(function () {
+                    $(this).datepicker('show');
+                });
+
+                toDateInput.click(function () {
+                    $(this).datepicker('show');
+                });
+            })
+
+        }
+
+        function ModeType() {
+            if ($('.ddlMode').val() == "S") {
+                $("#divQPSSetting").show(500);
+            }
+            else {
+                $("#divQPSSetting").hide(500);
+            }
+        }
+
+        function ChangeQuantity(txt) {
+            var Container;
+            if (txt != undefined) {
+                if ($(txt).val() == "" || isNaN(parseInt($(txt).val()))) {
+                    $(txt).val("1");
+                }
+                //Container = $(txt).parent().parent();
+            }
+        }
+
+        function SetDiscount() {
+            $('.txtDiscount').val('');
+            var cmpDic = $('.txtCompanyDisc').val();
+            var disDic = $('.txtDistributorDisc').val();
+
+            var sum = parseFloat(cmpDic) + parseFloat(disDic);
+            $('.txtDiscount').val(sum.toFixed(2));
+        }
+
+        function onAutoCompleteSelected(sender, e) {
+            __doPostBack(sender.get_element().name, null);
+        }
+
+        function CheckRdb() {
+            if ($('.ddlMode').val() == "S") {
+                if ($('input:radio[id*=rdbdis]').is(":checked")) {
+                    $('.txtPrice').val(0);
+                    $('.txtPrice').attr('disabled', 'disabled');
+                }
+                else
+                    $('.txtPrice').removeAttr('disabled', 'disabled');
+            }
+        }
+
+        function GetItemDetailsByCode(ItemCode, row) {
+
+            var ItmCode = ItemCode.split("-")[0].trim();
+            console.log(ItmCode);
+            $.ajax({
+                url: 'ProductCatalogMaster.aspx/GetItemDetails',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: "{ 'ItemCode': '" + ItmCode + "'}",
+                success: function (result) {
+                    if (result == "") {
+                        event.preventDefault();
+                        return false;
+                    }
+                    else if (result.d[0].indexOf("ERROR=") >= 0) {
+                        var ErrorMsg = result.d[0].split('=')[1].trim();
+                        ModelMsg(ErrorMsg, 3);
+                        event.preventDefault();
+                        return false;
+                    }
+                    else {
+                        var units = JSON.parse(result.d);
+                        console.log(units[0].BeatEmp);
+                        $('.txtItemGroupName').val(units[0].ItemGroupName);
+                        $('.txtItemSubGroupName').val(units[0].ItemSubGroupName);
+                        $('.txtPCS').val(units[0].PCS);
+                        $('.txtLtr').val(units[0].Ltr);
+                        $('.hdnItemID').val(units[0].ItemID);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert('Something is wrong...' + XMLHttpRequest.responseText);
+                    event.preventDefault();
+                    return false;
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+    <style>
+        .table > tbody > tr > td {
+            padding: 5px !IMPORTANT;
+        }
+
+        .table {
+            margin-top: 0 !important;
+        }
+
+        .button {
+            margin-right: 5px;
+        }
+
+        .textright {
+            text-align: right;
+        }
+    </style>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="body" runat="Server">
+    
+    <div style="margin-left: 15px">
+        <input type="checkbox" name="onoffswitch" class="_auchk" onchange="javascript: setTimeout('__doPostBack(\'\',\'\')', 0)" data-size="large" data-on-text="Add" data-off-text="Update" clientidmode="Static" id="chkMode" runat="server" checked="checked" onserverchange="chkMode_Checked" />
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row _masterForm">
+                <div class="col-lg-4">
+                    <div class="input-group form-group">
+                        <asp:Label Text="No" runat="server" CssClass="input-group-addon" Style="min-width: 100px !important;" />
+                        <asp:TextBox runat="server" ID="txtCode" OnTextChanged="txtCodeTextChanged" CssClass="form-control"
+                            data-bv-notempty="true" data-bv-notempty-message="Field is required" />
+                        <asp:AutoCompleteExtender OnClientShown="resetPosition" CompletionListCssClass="CompletionListClass" ID="ACEtxtCode" runat="server" ServiceMethod="GetProductCataLog"
+                            ServicePath="../WebService.asmx" MinimumPrefixLength="1" CompletionInterval="10" OnClientItemSelected="onAutoCompleteSelected"
+                            EnableCaching="false" CompletionSetCount="1" TargetControlID="txtCode" UseContextKey="True"
+                            Enabled="true">
+                        </asp:AutoCompleteExtender>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="input-group form-group">
+       
+                        <asp:Label ID="lblItemName" runat="server" Text="Item Name <font color='red'><b>  * </b></font>" CssClass="input-group-addon" ></asp:Label>
+                        <asp:TextBox ID="txtItemName" CssClass="txtItemName form-control" MaxLength="500" runat="server" Style="background-color: rgb(250, 255, 189);" onpaste="return false;" data-bv-notempty="true" data-bv-notempty-message="Field is required"  ></asp:TextBox>
+                        <input  type="hidden" id="hdnItemID" value="0" class="hdnItemID" runat="server" />
+                    </div>
+                </div>
+               
+                <div class="col-lg-4">
+                    <div class="input-group form-group">
+                        <asp:Label ID="lblItemGroupName" runat="server" Text='Item Group Name' CssClass="input-group-addon"></asp:Label>
+                        <asp:TextBox ID="txtItemGroupName" CssClass="txtItemGroupName form-control" MaxLength="500" runat="server" Enabled="false"></asp:TextBox>
+
+                    </div>
+                </div>
+
+                 <div class="col-lg-4">
+                    <div class="input-group form-group">
+                        <asp:Label ID="lblPCS" runat="server" Text='PCS' CssClass="input-group-addon"></asp:Label>
+                        <asp:TextBox ID="txtPCS" CssClass="txtPCS form-control" MaxLength="500" runat="server" Enabled="false"></asp:TextBox>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="input-group form-group">
+                        <asp:Label ID="lblItemSubGroupName" runat="server" Text='Sub Group Name' CssClass="input-group-addon"></asp:Label>
+                        <asp:TextBox ID="txtItemSubGroupName" CssClass="txtItemSubGroupName form-control" MaxLength="500" runat="server" Enabled="false"></asp:TextBox>
+
+                    </div>
+                </div>
+
+               
+
+                <div class="col-lg-4">
+                    <div class="input-group form-group">
+                        <asp:Label ID="lblLtr" runat="server" Text='Ltr' CssClass="input-group-addon"></asp:Label>
+                        <asp:TextBox ID="txtLtr" CssClass="txtLtr form-control" MaxLength="500" runat="server" Enabled="false"></asp:TextBox>
+
+                    </div>
+                </div>
+
+                <%--<div class="col-lg-5">
+                    <div class="input-group form-group">
+                        <asp:Label Text="Name" runat="server" CssClass="input-group-addon" />
+                        <asp:TextBox runat="server" ID="txtName" CssClass="form-control" MaxLength="500" data-bv-notempty="true" data-bv-notempty-message="Field is required" />
+                    </div>
+                </div>--%>
+            </div>
+            <div style="float: right; margin-right: 40px;">
+                <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-success" OnClientClick="return _btnCheck();" OnClick="btnSubmitClick" ValidationGroup="cmgroup" />
+                <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-danger" UseSubmitBehavior="false" CausesValidation="false" OnClick="btnCancelClick" />
+            </div>
+
+            <ul id="tabs" class="nav nav-tabs" role="tablist">
+                <li class="active"><a href="#tabs-1" role="tab" data-toggle="tab">General</a></li>
+                <li><a href="#tabs-2" role="tab">Customer</a></li>
+                <li><a href="#tabs-4" role="tab">Image Upload</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div id="tabs-1" class="tab-pane active">
+                    <div class="row _masterForm">
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label Text="From Date " runat="server" CssClass="input-group-addon" />
+                                <asp:TextBox runat="server" ID="txtFromDate" onfocus="this.blur();" ondrag="return false;" ondrop="return false;" onpaste="return false;" CssClass="datepicker form-control"  />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label Text="To Date" runat="server" CssClass="input-group-addon" />
+                                <asp:TextBox runat="server" ID="txtToDate" onfocus="this.blur();"  ondrag="return false;" ondrop="return false;" onpaste="return false;"  CssClass="datepicker1 form-control"   />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblActive" runat="server" Text="Active" CssClass="input-group-addon"></asp:Label>
+                                <asp:CheckBox ID="chkActive" runat="server" Checked="true" Style="margin: 4px 22px 0;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblCreatedBy" runat="server" Text="Created By" CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtCreatedBy" Enabled="false" runat="server" CssClass="form-control txtCreatedBy" Style="font-size: small"></asp:TextBox>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblUpdatedBy" runat="server" Text="Updated By" CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtUpdatedBy" Enabled="false" runat="server" CssClass="form-control txtUpdatedBy" Style="font-size: small"></asp:TextBox>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="tabs-2" class="tab-pane">
+                    <div class="row _materialForm">
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblRegion" runat="server" Text="Dealer Region" CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtRegion" CssClass="txtRegion form-control" runat="server" Style="background-color: rgb(250, 255, 189);"></asp:TextBox>
+                                <asp:AutoCompleteExtender OnClientShown="resetPosition" CompletionListCssClass="CompletionListClass" ID="AutoCompleteExtender1" runat="server" ServiceMethod="GetStateNames"
+                                    ServicePath="../WebService.asmx" MinimumPrefixLength="1" CompletionInterval="10" EnableCaching="false" CompletionSetCount="1"
+                                    TargetControlID="txtRegion" UseContextKey="True">
+                                </asp:AutoCompleteExtender>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblDistRegion" runat="server" Text='Distributor Region' CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtDistRegion" runat="server" Style="background-color: rgb(250, 255, 189);" CssClass="txtDistRegion form-control"></asp:TextBox>
+                                <asp:AutoCompleteExtender OnClientShown="resetPosition" CompletionListCssClass="CompletionListClass" ID="AutoCompleteExtender2" runat="server" ServiceMethod="GetStateNames"
+                                    ServicePath="../WebService.asmx" OnClientPopulating="autoCompletePlant_OnClientPopulating" MinimumPrefixLength="1" CompletionInterval="10"
+                                    EnableCaching="false" CompletionSetCount="1" TargetControlID="txtDistRegion" UseContextKey="True">
+                                </asp:AutoCompleteExtender>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group" id="division" runat="server" visible="false">
+                                <asp:Label ID="lbldivision" runat="server" Text='Division' CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtDivision" runat="server" Style="background-color: rgb(250, 255, 189);" CssClass="txtDivision form-control" data-bv-notempty="true"></asp:TextBox>
+                                <asp:AutoCompleteExtender OnClientShown="resetPosition" CompletionListCssClass="CompletionListClass" ID="AutoCompleteExtender4" runat="server" ServiceMethod="GetActiveDivision" ServicePath="../WebService.asmx" MinimumPrefixLength="1" CompletionInterval="10" EnableCaching="false" CompletionSetCount="1" TargetControlID="txtDivision" UseContextKey="True"></asp:AutoCompleteExtender>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label runat="server" ID="lblEmpGroup" Text="Employee Category" CssClass="input-group-addon"></asp:Label>
+                                <asp:DropDownList runat="server" ID="ddlEGroup" AutoPostBack="True" CssClass="form-control" data-bv-callback="true" data-bv-callback-message="Select Value" data-bv-callback-callback="_ddvalCheck"
+                                    DataTextField="EmpGroupName" DataValueField="EmpGroupID">
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblEmp" runat="server" Text="Employee" CssClass="input-group-addon"></asp:Label>
+                                <asp:TextBox ID="txtEmp" runat="server" MaxLength="200" CssClass="form-control" Style="background-color: rgb(250, 255, 189);"></asp:TextBox>
+                                <asp:AutoCompleteExtender OnClientShown="resetPosition" CompletionListCssClass="CompletionListClass" ID="acettxtManagerCode" runat="server" ServicePath="../WebService.asmx"
+                                    UseContextKey="true" ServiceMethod="GetEmployee" MinimumPrefixLength="1" CompletionInterval="10" EnableCaching="false" CompletionSetCount="1" TargetControlID="txtEmp">
+                                </asp:AutoCompleteExtender>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Label ID="lblIsInclude" runat="server" Text="Is Include" CssClass="input-group-addon"></asp:Label>
+                                <asp:CheckBox ID="chkIsInclude" runat="server" TabIndex="4" Checked="true" Style="margin: 4px 22px 0;" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group form-group">
+                                <asp:Button ID="btnAddCustData" runat="server" Text="Add Cust Data" CssClass="btn btn-info button" OnClick="btnAddCustData_Click" />
+                                <asp:Button ID="btnCancleCustData" runat="server" Text="Clear Cust Data" CssClass="btn btn-warning" OnClick="btnCancleCustData_Click" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12"> 
+                             <div style="overflow-x: auto; overflow-y: auto; max-height: 41vh">
+                            <asp:GridView runat="server" ID="gvCustData" Width="100%" Style="font-size: 10px;" AutoGenerateColumns="false" CssClass="table" HeaderStyle-CssClass="table-header-gradient"
+                                OnRowCommand="gvCustData_RowCommand" EmptyDataText="No Record Found." >
+                                <Columns>
+                                    <asp:TemplateField HeaderText="No.">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblGNo" runat="server" Text='<%# Container.DataItemIndex + 1 %>'></asp:Label>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="2%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField>
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="btnEdit" runat="server" Text="Edit" CommandName="editCustData" CommandArgument='<%# Container.DataItemIndex  %>'></asp:LinkButton>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="2%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField>
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="btnDetails" runat="server" Text="Delete" CommandName="deleteCustData" CommandArgument='<%# Container.DataItemIndex  %>'></asp:LinkButton>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="2%" />
+                                    </asp:TemplateField>
+                                    <asp:BoundField HeaderText="Dealer Region" DataField="RegionName" HeaderStyle-Width="6%" />
+                                    <asp:BoundField HeaderText="Dist Region" DataField="DistRegionName" HeaderStyle-Width="8%" />
+                                    <asp:BoundField HeaderText="Division" DataField="DivisionName" HeaderStyle-Width="9%" Visible="false" />
+                                    <asp:BoundField HeaderText="Employee Category" DataField="EmpGroupName" HeaderStyle-Width="10%" />
+                                    <asp:BoundField HeaderText="Employee" DataField="EmployeeName" HeaderStyle-Width="10%" />
+                                     <asp:BoundField HeaderText="Include" DataField="IsInclude" HeaderStyle-Width="5%" />
+                                    <%--<asp:BoundField HeaderText="Active" DataField="Active" HeaderStyle-Width="4%" />--%>
+                                </Columns>
+                            </asp:GridView>
+                                 </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <asp:GridView ID="gvMissdata" runat="server" CssClass="table table-bordered table-responsive" AutoGenerateColumns="true">
+                        </asp:GridView>
+                    </div>
+                </div>
+                <div id="tabs-4" class="tab-pane">
+                    <div class="col-lg-4">
+                        <div class="input-group form-group">
+                            <center>
+                                <a class="imgProduct"  id="alink" runat="server">
+                                    <asp:Image ID="imgProduct" CssClass="imgVehicle" ImageUrl="~/Images/no.jpg" runat="server" Style="width: 30%;" /></a>
+                                <asp:AsyncFileUpload UploaderStyle="Traditional" ID="afuProductPhoto" ClientIDMode="AutoID" runat="server"
+                                    OnUploadedComplete="afuProductPhoto_UploadedComplete" Style="margin-top: 3%" CompleteBackColor="White" CssClass="imageUploaderField" />
+                            </center>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div style="overflow-x: auto; overflow-y: auto; max-height: 30vh">
+                            <asp:GridView runat="server" ID="GvImage" Width="100%" Style="font-size: 10px;" AutoGenerateColumns="false" CssClass="table" HeaderStyle-CssClass="table-header-gradient" OnRowCommand="GvImage_RowCommand" EmptyDataText="No Record Found.">
+                                <Columns>
+                                    <asp:TemplateField HeaderText="No.">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblGNo" runat="server" Text='<%# Container.DataItemIndex + 1 %>'></asp:Label>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="20%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Edit">
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="btnEdit" runat="server" Text="Edit" CommandName="editImage" CommandArgument='<%# Container.DataItemIndex  %>'></asp:LinkButton>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="20%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Delete">
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="btnDelete" runat="server" Text="Delete" CommandName="deleteImage" CommandArgument='<%# Container.DataItemIndex  %>'></asp:LinkButton>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="20%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Image">
+                                        <ItemTemplate>
+                                            <asp:HiddenField runat="server" ID="hdnImageID" Value='<%#Eval("ImagePath") %>' />
+                                            <asp:Label ID="lblImage" runat="server" Text='<%#Eval("ImagePath") %>'></asp:Label>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="20%" />
+                                    </asp:TemplateField>
+                                     <asp:TemplateField HeaderText="Preview">
+                                        <ItemTemplate>
+                                            <a href='/Document/DashBoardImages/<%#Eval("ImagePath")%>' target='_blank''>Preview Image</a>
+                                        </ItemTemplate>
+                                        <HeaderStyle Width="20%" />
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <asp:GridView ID="GridView2" runat="server" CssClass="table table-bordered table-responsive" AutoGenerateColumns="true">
+                        </asp:GridView>
+                    </div>
+
+                    <div class="input-group form-group">
+                         <asp:UpdatePanel ID="updatepnl" runat="server">
+            <ContentTemplate>
+                        <asp:Button ID="btnAddPhoto" runat="server" Text="Add Image" CssClass="btn btn-info button" OnClick="btnAddPhoto_Click" />
+                        <asp:Button ID="btnclear" runat="server" Text="Clear Image" CssClass="btn btn-warning" OnClick="btnclear_Click" />
+                 </ContentTemplate>
+            <Triggers>
+                <asp:PostBackTrigger ControlID="btnAddPhoto" />
+            </Triggers>
+        </asp:UpdatePanel>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>
+
+

@@ -1,0 +1,4 @@
+Lowerlimit,Higherlimit,Occurence,BaseOn,CompanyDisc,CustomerDisc,DiscInPer_Rs,Quantity,Price,ItemCode,Pair
+1000,,2500,Gross Amount,95,5,A,1,100,FGIFDKU33,No
+1000,,2500,Purchase Qty,95,5,A,1,100,FGIFDKU33,
+1000,,2500,unit,95,5,A,1,100,FGIFDKU33,Yes

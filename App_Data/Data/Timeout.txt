@@ -1,0 +1,7 @@
+
+cd  C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+OR
+cd  C:\Windows\Microsoft.NET\Framework\v4.0.30319
+
+aspnet_regsql.exe -ssadd -d master -sstype c -S VCCRPD020\SqlExpress -U sa -P vc@erp_123
+

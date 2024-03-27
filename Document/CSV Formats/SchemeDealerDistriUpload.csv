@@ -1,0 +1,6 @@
+RegionCode,PlantCode,DistributorCode,DealerCode,AssetCode,CustGroupName,CoupenAmount,IsInclude
+26,,,,ALT15160/01,,0,TRUE
+,1201,,,ALT15315/02,,0,FALSE
+,,DABS9440,,AND1615842,,0,TRUE
+,,,DABD0890,B40010378H13,,5000,FALSE
+,,,,,#02,0,TRUE

@@ -1,0 +1,529 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="OutletMaster.master.cs" Inherits="OutletMaster" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Vadilal House Vadilal Enterprises Ltd.</title>
+
+    <link href="Scripts/ui/css/smoothness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css" />
+    <link href="Scripts/model/basic.css" rel="stylesheet" />
+    <link href="Scripts/BootStrapCSS/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="Scripts/BootStrapCSS/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="Scripts/BootStrapCSS/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+    <link href="Scripts/BootStrapCSS/bootstrapValidator.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="Scripts/BootStrapCSS/index.css" rel="stylesheet" type="text/css" />
+    <link href="Scripts/BootStrapCSS/simple-sidebar.css" rel="stylesheet" type="text/css" />
+
+    <script src="../Scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="../Scripts/ui/js/jquery-ui-1.10.3.custom.js" type="text/javascript"></script>
+    <%--<script src="../Scripts/ui/js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>--%>
+    <script src="../Scripts/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="../Scripts/model/jquery.simplemodal-1.4.4.js" type="text/javascript"></script>
+    <script src="../Scripts/index.js" type="text/javascript"></script>
+    <script src="../Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script src="../Scripts/Bootstrap/bootstrap.js" type="text/javascript"></script>
+    <script src="../Scripts/Bootstrap/bootstrap-switch.js" type="text/javascript"></script>
+    <script src="../Scripts/Bootstrap/bootstrapValidator.js" type="text/javascript"></script>
+
+    <script type="text/javascript" lang="javascript">
+
+        $(function () {
+            Upload();
+            Sys.WebForms.PageRequestManager.getInstance().add_beginRequest(BeginRequestHandler);
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+        });
+
+        function ValidateDate(txt) {
+            var txtVal = $(txt).val();
+
+            if (txtVal == "") {
+                return true;
+            }
+
+            var rxDatePattern = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/; //Declare Regex
+            var dtArray = txtVal.match(rxDatePattern); // is format OK?
+
+            if (dtArray == null) {
+                ModelMsg("Please enter proper date in dd/mm/yyyy format", 3);
+                var today = new Date();
+
+                var mon = today.getMonth() + 1;
+                var mydt = today.getDate();
+                if (mydt < 10) {
+                    mydt = "0" + mydt;
+                }
+                if (mon < 10) {
+                    mon = "0" + mon;
+                }
+
+                $(txt).val(mydt + "/" + mon + "/" + today.getFullYear());
+                event.preventDefault();
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function stopRKey(evt) {
+            var evt = (evt) ? evt : ((event) ? event : null);
+            var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+            if ((evt.keyCode == 13) && (node.type == "text")) { return false; }
+        }
+
+        document.onkeypress = stopRKey;
+
+        function resetPosition(object, args) {
+            var tb = object._element;
+            var tbposition = findPositionWithScrolling(tb);
+            var xposition = tbposition[0];
+            var yposition = tbposition[1] + 35; // 22 textbox height
+            var ex = object._completionListElement;
+            if (ex)
+                $common.setLocation(ex, new Sys.UI.Point(xposition, yposition));
+        }
+
+        function findPositionWithScrolling(oElement) {
+            if (typeof (oElement.offsetParent) != 'undefined') {
+                var originalElement = oElement;
+                for (var posX = 0, posY = 0; oElement; oElement = oElement.offsetParent) {
+                    posX += oElement.offsetLeft;
+                    posY += oElement.offsetTop;
+                    if (oElement != originalElement && oElement != document.body && oElement != document.documentElement) {
+                        posX -= oElement.scrollLeft;
+                        posY -= oElement.scrollTop;
+                    }
+                }
+                return [posX, posY];
+            } else {
+                return [oElement.x, oElement.y];
+            }
+        }
+
+        var oldRowColor;
+
+        function Panel_Click() {
+
+            $(function () {
+
+                $("#menu-toggle").click(function () {
+                    //alert($('#slider_img').hasClass('right'));
+                    if ($('#slider_img').hasClass('right')) {
+                        $('#slider_img').attr('src', '../Images/left_arrow.png');
+                        $('#slider_img').removeClass('right');
+                    } else {
+                        $('#slider_img').attr('src', '../Images/right_arrow.png');
+                        $('#slider_img').addClass('right');
+                    }
+                    $('#sidebar-wrapper').css('-webkit-transition', 'all 0.5s ease');
+                    $('#sidebar-wrapper').css('-moz-transition', 'all 0.5s ease');
+                    $('#sidebar-wrapper').css('-o-transition', 'all 0.5s ease');
+                    $('#sidebar-wrapper').css('transition', 'all 0.5s ease');
+                    $('#wrapper').css('-webkit-transition', 'all 0.5s ease');
+                    $('#wrapper').css('-moz-transition', 'all 0.5s ease');
+                    $('#wrapper').css('-o-transition', 'all 0.5s ease');
+                    $('#wrapper').css('transition', 'all 0.5s ease');
+                    $("#wrapper").toggleClass("toggled");
+                });
+
+                $('.outer #UpdatePanel1').click(function () {
+
+                    if ($('#sidebar-wrapper').width() > 0) {
+                        if ($('#slider_img').hasClass('right')) {
+                            $('#slider_img').attr('src', '../Images/left_arrow.png');
+                            $('#slider_img').removeClass('right');
+                        } else {
+                            $('#slider_img').attr('src', '../Images/right_arrow.png');
+                            $('#slider_img').addClass('right');
+                        }
+                        $('#sidebar-wrapper').css('-webkit-transition', 'all 0.5s ease');
+                        $('#sidebar-wrapper').css('-moz-transition', 'all 0.5s ease');
+                        $('#sidebar-wrapper').css('-o-transition', 'all 0.5s ease');
+                        $('#sidebar-wrapper').css('transition', 'all 0.5s ease');
+                        $('#wrapper').css('-webkit-transition', 'all 0.5s ease');
+                        $('#wrapper').css('-moz-transition', 'all 0.5s ease');
+                        $('#wrapper').css('-o-transition', 'all 0.5s ease');
+                        $('#wrapper').css('transition', 'all 0.5s ease');
+                        $("#wrapper").toggleClass("toggled");
+                    }
+                });
+
+                $('._masterForm').bootstrapValidator({
+                    feedbackIcons: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    live: 'enabled',
+                    trigger: null
+                }).on('success.form.bv', function (e) {
+                    // Prevent submit form
+                    e.preventDefault();
+                })
+                 .on('error.form.bv', function () {
+
+                 });
+            });
+        }
+
+        function ChangeColor() {
+            var obj = window.event.srcElement;
+            if (obj.tagName == "INPUT" && obj.type == "text") {
+                obj = obj.parentElement.parentElement;
+                oldRowColor = obj.className;
+                obj.className = "HighLightRowColor";
+            }
+        }
+
+        function ResetColor() {
+            var obj = window.event.srcElement;
+            if (obj.tagName == "INPUT" && obj.type == "text") {
+                obj = obj.parentElement.parentElement;
+                obj.className = oldRowColor;
+
+
+            }
+        }
+
+        function enter(obj) {
+
+            var tr = obj.parentNode.parentNode;
+            if (event.keyCode == 40) //Down 
+            {
+                if (tr.rowIndex <= tr.parentNode.rows.length - 1) {
+                    tr.parentNode.rows[tr.rowIndex].cells[obj.parentNode.cellIndex].children[0].focus();
+                    tr.parentNode.rows[tr.rowIndex].cells[obj.parentNode.cellIndex].children[0].select();
+                }
+            }
+            else if (event.keyCode == 37) //Left 
+            {
+                if (obj.parentNode.cellIndex > 0) {
+                    tr.parentNode.rows[tr.rowIndex - 1].cells[obj.parentNode.cellIndex - 1].children[0].focus();
+                    tr.parentNode.rows[tr.rowIndex - 1].cells[obj.parentNode.cellIndex - 1].children[0].select();
+                }
+            }
+            else if (event.keyCode == 39) //Right 
+            {
+                if (obj.parentNode.cellIndex < tr.cells.length - 1) {
+                    tr.parentNode.rows[tr.rowIndex - 1].cells[obj.parentNode.cellIndex + 1].children[0].focus();
+                    tr.parentNode.rows[tr.rowIndex - 1].cells[obj.parentNode.cellIndex + 1].children[0].select();
+                }
+            }
+            else if (event.keyCode == 38) //Up 
+            {
+                if (tr.rowIndex > 1) {
+                    tr.parentNode.rows[tr.rowIndex - 2].cells[obj.parentNode.cellIndex].children[0].focus();
+                    tr.parentNode.rows[tr.rowIndex - 2].cells[obj.parentNode.cellIndex].children[0].select();
+                }
+            }
+        }
+
+        function ModelMsg(Text, ECode) {
+            var Mmst = "1";
+            if (ECode == undefined)
+                ECode = "1";
+            $.modal(Text, ECode, Mmst);
+        }
+
+        function BeginRequestHandler(sender, args) {
+            $.blockUI({
+                message: '<img src="../Images/loadingbd.gif" />',
+                css: {
+                    padding: 0,
+                    margin: 0,
+                    width: '15%',
+                    top: '36%',
+                    left: '40%',
+                    textAlign: 'center',
+                    cursor: 'wait'
+                }
+            });
+        }
+
+        function EndRequestHandler(sender, args) {
+
+            $.unblockUI();
+            Upload();
+            var error = args.get_error();
+            if (null != error) {
+                args.set_errorHandled(true);
+                ModelMsg("Following error occured while processing: \n" + error.message, '2');
+            }
+        }
+
+        function Upload() {
+
+            $('.fromdate').attr('data-bv-date', 'true');
+            $('.fromdate').attr('data-bv-date-format', 'DD/MM/YYYY');
+            $('.todate').attr('data-bv-date', 'true');
+            $('.todate').attr('data-bv-date-format', 'DD/MM/YYYY');
+            $('.tab-pane .table').css('margin-top', '10px');
+            SetTheme(sessionStorage.getItem('color'));
+            $('.embed-responsive.embed-responsive-16by9').css('padding-bottom', (innerHeight - 240) + "px");
+            $('iframe').css('height', (innerHeight - 240) + "px");
+
+            $('._masterForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                live: 'enabled',
+                trigger: null
+            })// Called when a field is invalid
+               .on('error.field.bv', function (e, data) {
+                   // data.element --> The field element
+                   // alert('errr');
+                   var $tabPane = data.element.parents('.tab-pane'),
+                       tabId = $tabPane.attr('id');
+
+                   $('a[href="#' + tabId + '"][data-toggle="tab"]')
+                       .parent()
+                       .find('i')
+                       .removeClass('fa-check')
+                       .addClass('fa-times');
+               })
+               // Called when a field is valid
+               .on('success.field.bv', function (e, data) {
+                   // data.bv      --> The BootstrapValidator instance
+                   // data.element --> The field element
+                   //alert(data.element.parents('.tab-pane'));
+                   var $tabPane = data.element.parents('.tab-pane'),
+                       tabId = $tabPane.attr('id'),
+                       $icon = $('a[href="#' + tabId + '"][data-toggle="tab"]')
+                                   .parent()
+                                   .find('i')
+                                   .removeClass('fa-check fa-times');
+
+                   // Check if the submit button is clicked
+                   if (data.bv.getSubmitButton()) {
+                       // Check if all fields in tab are valid
+
+                       var isValidTab = data.bv.isValidContainer($tabPane);
+                       $icon.addClass(isValidTab ? 'fa-check' : 'fa-times');
+                   }
+               });
+
+            $('._panelForm').bootstrapValidator({
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                live: 'enabled',
+                trigger: null
+            }).on('success.form.bv', function (e) {
+                // Prevent submit form
+                e.preventDefault();
+            }).on('error.form.bv', function () {
+
+            });
+
+            $("#wrapper").addClass("toggled");
+
+            $("._auchk").bootstrapSwitch();
+
+            $('.datepick').datepicker({ dateFormat: 'dd/mm/yy', changeMonth: true, changeYear: true });
+
+            $('.fromdate').datepicker({
+                numberOfMonths: 1,
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (selected) {
+                    $('.todate').datepicker("option", "minDate", selected);
+                }
+            });
+
+            $('.todate').datepicker({
+                numberOfMonths: 1,
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (selected) {
+                    $('.fromdate').datepicker("option", "maxDate", selected);
+                }
+            });
+
+        }
+
+        function SetTheme(colorcode) {
+
+            sessionStorage.setItem("colorcode", colorcode);
+            $('#sidebar-wrapper').css('background', colorcode);
+            $('.slider-icon').css('background-color', colorcode);
+            $('.notice-inner-header').css('background', colorcode);
+        }
+
+        function _ddvalCheck(value, validator) {
+            if (value != 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function SetQtyDataFocus(txt) {
+            var qty = $(txt).val();
+            if (qty == "0") {
+                $(txt).val('');
+            }
+            else if (qty == '') {
+                $(txt).val('0');
+            }
+        }
+
+        function SetQtyDataBlur(txt) {
+            var qty = $(txt).val();
+            if (qty == '') {
+                $(txt).val('0');
+            }
+        }
+
+    </script>
+
+    <style>
+        .CompletionListClass {
+            width: 500px !Important;
+            min-width: 500px !Important;
+            overflow: auto;
+            height: 300px;
+            text-align: left;
+            font-size: 12px;
+            padding: 0px !Important;
+            list-style: none;
+            background-color: lightyellow !important;
+        }
+
+        .slider-icon {
+            padding: 10px;
+            width: auto;
+            float: left;
+            background-color: black;
+            font: 400 12px Arial, Helvetica, sans-serif;
+            color: #000;
+            text-decoration: none;
+            position: fixed;
+            margin-top: 0%;
+            /*margin-left: 0.6%;*/
+            border-bottom-right-radius: 10px;
+            z-index: 9998;
+            display: none;
+            display: block;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        table {
+            table-layout: fixed;
+            font-size: 13px;
+        }
+
+            table tr td, table tr th {
+                word-wrap: break-word;
+            }
+
+        .notice-inner-header {
+            width: auto;
+            background: black;
+            border-bottom: 1px solid #eaeff3;
+            color: #ffffff;
+            position: fixed;
+            top: 0;
+            font-size: 16px;
+            font-weight: 600;
+            height: 45px;
+            -moz-border-bottom-left-radius: 6px;
+            -webkit-border-bottom-left-radius: 6px;
+            border-bottom-left-radius: 6px;
+            background-color: black;
+            right: 0;
+            z-index: 9;
+        }
+
+            .notice-inner-header p.warn-header {
+                text-align: center;
+                line-height: 10px;
+                padding: 15px;
+                -moz-border-bottom-left-radius: 1px;
+                -webkit-border-bottom-left-radius: 1px;
+                border-bottom-left-radius: 1px;
+            }
+
+                .notice-inner-header p.warn-header a {
+                    color: white;
+                    text-decoration: none;
+                }
+
+        .imageThumb {
+            max-height: 75px;
+            padding: 1px;
+            cursor: pointer;
+            width: 100%;
+            height: 100px;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div id="page-content-wrapper" style="padding: 0px">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12 outer">
+                        <div class="notice-inner-header">
+                            <p class="warn-header">
+                                <asp:LinkButton ID="lnkTitle" runat="server" Text="Home"></asp:LinkButton>
+                            </p>
+                        </div>
+                        <div id="wrapper">
+                            <%--<a class="btn btn-default slider-icon"  usesubmitbehavior="false" style="margin-left: -15px">>></a>--%>
+                            <a id="menu-toggle" href="javascript:void(0);" class="slider-icon" style="margin-left: -15px">
+                                <img src="../Images/right_arrow.png" id="slider_img" class="right" style="width: 25px; height: 25px" />
+                            </a>
+                            <div id="sidebar-wrapper">
+                                <ul class="sidebar-nav">
+                                    <asp:ListView runat="server" ID="lvMenu">
+                                        <ItemTemplate>
+                                            <li style="border-bottom: 1px solid white">
+                                                <asp:LinkButton Text='<%# Eval("MenuName") %>' runat="server" PostBackUrl='<%# Eval("MenuPath") %>' Style="color: white"></asp:LinkButton>
+                                            </li>
+                                        </ItemTemplate>
+                                        <LayoutTemplate>
+                                            <li class="sidebar-brand">
+                                                <asp:LinkButton ID="lnkMain" runat="server" Text="HOME PAGE" PostBackUrl="~/Home.aspx"></asp:LinkButton>
+                                            </li>
+                                            <li id="itemPlaceholder" runat="server"></li>
+                                        </LayoutTemplate>
+                                    </asp:ListView>
+                                </ul>
+                            </div>
+                             <asp:Label ID="lblUserTest" runat="server"  style="padding-left:250px;" ForeColor="Black" Font-Bold="true" Font-Size="12px"></asp:Label>
+                        </div>
+                        <asp:ToolkitScriptManager ID="tsm" runat="server" CombineScripts="true" EnablePageMethods="true" AsyncPostBackTimeout="36000" ClientIDMode="AutoID"></asp:ToolkitScriptManager>
+                        <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" style="margin-top: 40px;">
+                            <ContentTemplate>
+                                <asp:ContentPlaceHolder ID="body" runat="server">
+                                </asp:ContentPlaceHolder>
+                            </ContentTemplate>
+                        </asp:UpdatePanel>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </form>
+</body>
+</html>

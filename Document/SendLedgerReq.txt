@@ -1,0 +1,12 @@
+ Services Started On : 24-Apr-17 06:27:29 PM for : 2000010000100000
+ Sap Response is CustomerLedger.DT_CustLedMail_Res for : 2000010000100000
+ Services Started On : 25-Apr-17 12:05:45 PM for : 2000010000100000
+Exception System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 192.168.50.39:50000
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception) for : 2000010000100000
+ Services Started On : 25-Apr-17 02:24:35 PM for : 2000060000100000
+Exception System.Net.Sockets.SocketException (0x80004005): A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 192.168.50.39:50000
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception) for : 2000060000100000
+ Services Started On : 25-Apr-17 02:26:24 PM for : 2000060000100000
+ Services Started On : 25-Apr-17 02:32:41 PM for : 2000060000100000
